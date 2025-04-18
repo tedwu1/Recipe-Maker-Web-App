@@ -1,19 +1,20 @@
 
 ## Functional Requirements
-1. A visitor can create an account by providing a username, email, and password. <should be 1 sentence that describes requirement>
+1. A visitor can create an account by providing a username, email, and password. 
 2. Registered users can log in using their email and password.
 3. Logged-in users can log out of their account securely.
 4. Logged-in users can add new recipes with title, description, ingredients, and instructions.
 5. Users can update their own recipes after creation.
-6. 
-7. requirement
-8. requirement
-9. requirement
-10. requirement
-11. requirement
-12. requirement
-13. requirement
-14. requirement
+6. Users can delete their own recipes.
+7. Anyone can view the details of a recipe including ingredients and instructions.
+8. Users can search recipes by title or ingredient keywords.
+9. Users can rate a recipe from 1 to 5 stars.
+10. Users can leave comments on a recipe.
+11. Users can view their own profile, including their submitted recipes.
+12. Users can update their display name, email, or password.
+13. Users can save or 'favorite' recipes for quick access later.
+14. Homepage or main recipe list shows all recipes available in the database.
+15. Users can filter recipes by tags like 'vegan', 'dessert', etc.
 
 <using the syntax [](images/ui1.png) add images in a folder called images/ and place sketches of your webpages>
 
@@ -23,7 +24,7 @@
 
 <each of the 14 requirements will have a use case associated with it>
 ## Use Cases <Add name of who will write (this specific requirement) and implement (in subsequent milestones) the use case below>
-1. Create an account (Should match functional requirement name)
+1. User Registration
 - **Pre-condition:** Must be on the Recipe Maker Web App website
 - **Trigger:** Clicking on the Create Account button/tab
 - **Primary Sequence:** 
@@ -50,7 +51,7 @@ User submits already existing account
 2. System reloads page
 3. System displays on notification bubble to user that "Account/Email already exists, please try again"
 
-2. Login User
+2. User Login
 - **Pre-condition:** The user is already registered in the system (i.e., has a valid email and password).
 The user is not currently logged in.
 - **Trigger:** The user navigates to the login page and submits their email and password through the login form.
@@ -74,7 +75,9 @@ No account found
 1. The email entered does not match any user.
 2. The system displays: “Account not found. Please register.”
 
-3. Add New Recipe
+3. User Logout
+
+4. Create Recipe 
 - **Pre-condition:** The user is logged in.
 The user is on the “Add New Recipe” page
 - **Trigger:** The user clicks “Add New Recipe” in the navigation and submits the completed recipe form.
@@ -94,7 +97,7 @@ Missing information
 2. System displays text bubble to user that information is missing
 3. No recipe is created
 
-4. Update Recipe
+5. Edit Recipe
 - **Pre-condition:** The user is logged in.
 The user has already created at least one recipe.
 The user is the owner of the recipe being edited.
@@ -114,3 +117,23 @@ Missing information
 1. System detects that required fields are empty
 2. System displays text bubble to user that information is missing
 3. Recipe remains unupdated.
+
+6. Delete Recipe
+
+7. View Recipe 
+
+8. Search Recipe 
+
+9. Rate Recipe
+
+10. Comment on Recipe 
+
+11. View User Profile 
+
+12. Edit User Profile 
+
+13. Save Recipe (Favorites)
+
+14. View All Recipes 
+
+15. Filter Recipes 
