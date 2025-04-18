@@ -1,21 +1,11 @@
-## Instructions
-- Delete this block before adding to your repository.
-- Delete any instructions you see below they will be within < >
-- This schedule should reflect the meetings from the start of the project until the end of the semester.
-- Write at least 1 meeting per week until the end of the semester
-
 ## Meetings
 ### 2025-04-18 at 10:30
-- Ted
+- Ted, Natalie, Hari
 - Team updates (15min or less)
-<Each team member gives an update of what they did from the last meeting and what
-they plan to do next. If they are stuck, bring it up here to see if others can
-help.>
-- <Ted> worked on creating shared repository, uploading files, adding requirements/descriptions. Will work on ???
-- pair-programming (optional) (25 mins)
-<- Pair program on one part of the project. Driver will be the person responsible
-for that requirement.>
-- Summarize group progress
+<Natalie> Worked on 5 requirements, fixed formatting for the meeting and readme files, worked on 1 use case. Will work on ???  
+<Ted> worked on creating shared repository, uploading files, adding requirements/descriptions. Will work on ???
+<Hari>
+- Summary: Completed Milestone 1! 
 
 ### 2023-10-08 at 13:30
 <meeting template would go here>

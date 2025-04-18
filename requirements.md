@@ -5,7 +5,7 @@
 3. Logged-in users can log out of their account securely.
 4. Logged-in users can add new recipes with title, description, ingredients, and instructions.
 5. Users can update their own recipes after creation.
-6. requirement
+6. 
 7. requirement
 8. requirement
 9. requirement
