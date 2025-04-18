@@ -5,14 +5,11 @@
 <Each team member gives an update of what they did from the last meeting and what
 they plan to do next. If they are stuck, bring it up here to see if others can
 help.>
-- <Ted> worked on creating shared repository, uploading files, adding requirements/descriptions. Will work on first functional requirement. (60 mins)
-- pair-programming (optional) (25 mins)
-<- Pair program on one part of the project. Driver will be the person responsible
-for that requirement.>
-- Summarize group progress
-<Natalie> Worked on 5 requirements, fixed formatting for the meeting and readme files, worked on 1 use case. Will work on ???  
-<Ted> worked on creating shared repository, uploading files, adding requirements/descriptions. Will work on ???
-<Hari>
+- Ted worked on creating shared repository, uploading files, adding requirements/descriptions. Will work on first functional requirement. (60 mins)
+- Summarize group progress:
+- Natalie: Worked on use cases for requirements 6-11, fixed formatting for the meeting and readme files,  Will work on ???  
+- Ted worked on creating shared repository, uploading files, adding requirements/descriptions. Will work on ???
+- Hari
 - Summary: Completed Milestone 1! 
 
 ### 2023-10-08 at 13:30
