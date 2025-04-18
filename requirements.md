@@ -44,9 +44,73 @@ Rejection: User is notified of rejection, is asked to refill information.
 User submits invalid email/username/password
 1. System detects invalid email/username/password
 2. System displays text bubble to user that information is invalid, and asks to refill information
-- **Alternate Sequence <optional>:** <you can have more than one alternate sequence to describe multiple issues that may arise>
+- **Alternate Sequence: 
+User submits already existing account
+1. System detects in database that account details/email are already being in use
+2. System reloads page
+3. System displays on notification bubble to user that "Account/Email already exists, please try again"
 
-1. Ut enim ad minim veniam, quis nostrum e
-2. Ut enim ad minim veniam, quis nostrum e
-3. ...
+2. Login User
+- **Pre-condition:** The user is already registered in the system (i.e., has a valid email and password).
+The user is not currently logged in.
+- **Trigger:** The user navigates to the login page and submits their email and password through the login form.
+- **Primary Sequence:** 
+- 1. User navigates to the login page.
+- 2. User enters their email into email box.
+- 3. User enters their password into password box.
+- 4. User clicks the “Login” button.
+- 5. The system verifies the credentials
+- 6. The system creates a session.
+- 7. User is redirected to the recipe list page
+- **Primary Postconditions:** 
+Success: The user is logged in and has access to authenticated pages and features, and a session is securely established.
+Rejection: User is notified of rejection, is asked to refill information, and a session is not established.
+- **Alternate Sequence:** 
+User submits invalid email/password combination
+1. System detects invalid email/password
+2. System displays text bubble to user that information is invalid, and asks to refill information
+- **Alternate Sequence:**
+No account found
+1. The email entered does not match any user.
+2. The system displays: “Account not found. Please register.”
 
+3. Add New Recipe
+- **Pre-condition:** The user is logged in.
+The user is on the “Add New Recipe” page
+- **Trigger:** The user clicks “Add New Recipe” in the navigation and submits the completed recipe form.
+- **Primary Sequence:** 
+- 1. The user navigates to the “Add New Recipe” page.
+- 2. The user fills in all required fields: Title, Description, Ingredients, Instructions.
+- 3. The user clicks the “Submit” button.
+- 4. The system validates the form inputs.
+- 5. The recipe is saved to the database, associated with the current user.
+- 6. The user is redirected to the newly created recipe’s detail page or the list of all recipes.
+- **Primary Postconditions:** 
+Success: A new recipe is stored in the database and is visible to the user.
+Rejection: User is notified of rejection, is asked to update information.
+- **Alternate Sequence:** 
+Missing information
+1. System detects that required fields are empty
+2. System displays text bubble to user that information is missing
+3. No recipe is created
+
+4. Update Recipe
+- **Pre-condition:** The user is logged in.
+The user has already created at least one recipe.
+The user is the owner of the recipe being edited.
+- **Trigger:** The user clicks the “Edit” or “Update” button on one of their recipe detail pages.
+- **Primary Sequence:** 
+- 1. The user navigates to a recipe they previously created.
+- 2. The user clicks the “Edit” button.
+- 3. The system loads a form pre-filled with the current title, description, ingredients, and instructions.
+- 4. The user updates one or more fields and submits the form.
+- 5. The system validates the input and updates the recipe in the database.
+- 6. The user is redirected to the updated recipe’s detail page.
+- **Primary Postconditions:** 
+Success:The user’s changes to the recipe are saved in the database, and the updated recipe is displayed with the new information.
+Rejection: User is notified of rejection, is asked to update information. No changes are made to the initial recipe.
+- **Alternate Sequence:** 
+Missing information
+1. System detects that required fields are empty
+2. System displays text bubble to user that information is missing
+3. Recipe remains unupdated.
