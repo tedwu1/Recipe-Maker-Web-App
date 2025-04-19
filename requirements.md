@@ -219,5 +219,20 @@ Fewer than 3 primary sequence steps.
 Fewer than 3 primary sequence steps. 
 
 14. View All Recipes 
+Fewer than 3 primary sequence steps. 
 
-15. Filter Recipes 
+15. **Name:** Filter Recipes
+- **Summary:** Users can filter recipes by tags like 'vegan', 'dessert', etc.
+- **Actors:** User, System
+- **Pre-condition:** 
+- 1. The user is logged in.
+- **Trigger:**: The user selects filter options from a dropdown menu. 
+- **Primary Sequence:**
+- 1. The system filters the recipes in the database according to filters. 
+- 2. The system selects the relevant recipes. 
+- 3. The system displays the relevant recipes. 
+- **Alternate Sequence:** 
+- 1. There are no recipes with the relevant filters.  
+- 1a. The system will display an error message “No Recipes Found” 
+- **Post-conditions:** 
+- The user sees recipes with specified filters. 
