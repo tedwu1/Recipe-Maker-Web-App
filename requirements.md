@@ -1,19 +1,20 @@
 
 ## Functional Requirements
-1. A visitor can create an account by providing a username, email, and password. <should be 1 sentence that describes requirement>
+1. A visitor can create an account by providing a username, email, and password. 
 2. Registered users can log in using their email and password.
 3. Logged-in users can log out of their account securely.
 4. Logged-in users can add new recipes with title, description, ingredients, and instructions.
 5. Users can update their own recipes after creation.
-6. 
-7. requirement
-8. requirement
-9. requirement
-10. requirement
-11. requirement
-12. requirement
-13. requirement
-14. requirement
+6. Users can delete their own recipes.
+7. Anyone can view the details of a recipe including ingredients and instructions.
+8. Users can search recipes by title or ingredient keywords.
+9. Users can rate a recipe from 1 to 5 stars.
+10. Users can leave comments on a recipe.
+11. Users can view their own profile, including their submitted recipes.
+12. Users can update their display name, email, or password.
+13. Users can save or 'favorite' recipes for quick access later.
+14. Homepage or main recipe list shows all recipes available in the database.
+15. Users can filter recipes by tags like 'vegan', 'dessert', etc.
 
 <using the syntax [](images/ui1.png) add images in a folder called images/ and place sketches of your webpages>
 
@@ -23,7 +24,7 @@
 
 <each of the 14 requirements will have a use case associated with it>
 ## Use Cases <Add name of who will write (this specific requirement) and implement (in subsequent milestones) the use case below>
-1. Create an account (Should match functional requirement name)
+1. **Name:** User Registration
 - **Pre-condition:** Must be on the Recipe Maker Web App website
 - **Trigger:** Clicking on the Create Account button/tab
 - **Primary Sequence:** 
@@ -50,7 +51,7 @@ User submits already existing account
 2. System reloads page
 3. System displays on notification bubble to user that "Account/Email already exists, please try again"
 
-2. Login User
+2. **Name:** User Login
 - **Pre-condition:** The user is already registered in the system (i.e., has a valid email and password).
 The user is not currently logged in.
 - **Trigger:** The user navigates to the login page and submits their email and password through the login form.
@@ -74,7 +75,10 @@ No account found
 1. The email entered does not match any user.
 2. The system displays: “Account not found. Please register.”
 
-3. Add New Recipe
+3. **Name:** User Logout
+Fewer than 3 primary sequence steps. 
+
+4. **Name:** Create Recipe 
 - **Pre-condition:** The user is logged in.
 The user is on the “Add New Recipe” page
 - **Trigger:** The user clicks “Add New Recipe” in the navigation and submits the completed recipe form.
@@ -94,7 +98,7 @@ Missing information
 2. System displays text bubble to user that information is missing
 3. No recipe is created
 
-4. Update Recipe
+5. **Name:** Edit Recipe
 - **Pre-condition:** The user is logged in.
 The user has already created at least one recipe.
 The user is the owner of the recipe being edited.
@@ -114,3 +118,87 @@ Missing information
 1. System detects that required fields are empty
 2. System displays text bubble to user that information is missing
 3. Recipe remains unupdated.
+
+6. **Name:** Delete Recipe
+- **Summary:** Users can delete their own recipes. 
+- **Actors:** User, System
+- **Pre-condition:** The user is logged in and has a recipe saved to the database. 
+- **Trigger:** The user clicks the "Delete Recipe" button on a recipe. 
+- **Primary Sequence:**
+- 1. The user navigates to a recipe they previously created. 
+- 2. The user clicks the "Delete" button. 
+- 3. The system prompts the user to confirm the deletion. 
+- 4. The user confirms the deletion. 
+- 5. The system deletes the recipe from the database. 
+- 6. The system redirects the user to the recipe page. 
+- **Alternate Sequence:** 
+- 3. User does not confirm deletion. 
+- a. User is then redirected to the recipe page. 
+- **Post-conditions:** 
+- System deletes recipe. 
+- User is not able to access the deleted recipe. 
+
+7. View Recipe 
+Fewer than 3 primary sequences.
+
+8. **Name:** Search Recipe 
+- **Summary:** Users can search recipes by title or ingredient keywords.
+- **Actors:** User, System
+- **Pre-condition:** 
+- 1. The user is logged in.
+- 2. The user has recipes saved to their recipe page
+- **Trigger:**: The user clicks the search bar. 
+- **Primary Sequence:**
+- 1. The user types the recipe name into search bar. 
+- 2. The system searches the database for a matching recipe name. 
+- 3. The system displays matching recipe names on the recipe page. 
+- **Alternate Sequence:** 
+- 2. The system does not find a matching recipe name in the database 
+- 2a. The system displays a “No Recipes Found” Error. 
+- **Post-conditions:** 
+- The user can see recipes with a name matching with what they searched. 
+
+9. **Name:** Rate Recipe 
+- **Summary:** Users can rate a recipe from 1 to 5 stars.
+- **Actors:** User, System
+- **Pre-condition:** 
+- 1. The user is logged in.
+- **Trigger:**: The user selects the “Rate Recipe” button.
+- **Primary Sequence:**
+- 1. The user selects a range of star buttons corresponding to a rating from 1-5.
+- 1a. 5 is a high rating, 1 is a low rating. 
+- 2. The user types a review of the recipe. 
+- 3. The system saves the rating into the database.
+- 4. The system updates the recipe’s rating to display on the website. 
+- **Alternate Sequence:** 
+- 1. The user does not select a star. 
+- 1a. The user may press the X button at the corner to exit the “Rate Recipe” page. 
+- **Post-conditions:** 
+- The recipe’s rating updates. 
+
+10. **Name:** Comment on Recipe
+- **Summary:** Users can leave comments on a recipe.
+- **Actors:** User, System
+- **Pre-condition:** 
+- 1. The user is logged in.
+- **Trigger:**: The user selects the “Comment” button.
+- **Primary Sequence:**
+- 1. The user types a comment into the text box.
+- 2. The user selects the “Post Comment” button.
+- 3. The system saves the comment into the database.
+- 4. The system displays the comment on the website.
+- **Alternate Sequence:** 
+- 1. The user types nothing into the text box. 
+- 1a. The “Post Comment” button will not appear clickable. 
+- **Post-conditions:** 
+- The user’s comment is displayed under the recipe.
+
+11. View User Profile 
+
+12. Edit User Profile 
+
+13. Save Recipe (Favorites)
+
+14. View All Recipes 
+
+15. Filter Recipes 
