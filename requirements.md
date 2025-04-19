@@ -193,11 +193,30 @@ Fewer than 3 primary sequences.
 - **Post-conditions:** 
 - The user’s comment is displayed under the recipe.
 
-11. View User Profile 
+11. **Name:** View User Profile
+Fewer than 3 primary sequence steps. 
 
-12. Edit User Profile 
+12. **Name:** Edit User Profile 
+- **Summary:** Users can update their display name, email, or password.
+- **Actors:** User, System
+- **Pre-condition:** 
+- 1. The user is logged in.
+- 2. The user is on their Profile page.
+- **Trigger:**: The user clicks on the “Edit Profile” button.
+- **Primary Sequence:**
+- 1. The user is redirected to an editable form page filled with the user’s current profile information.
+- 2. The user updates their profile information.
+- 3. The user clicks “Submit” to submits the form page with their edits. 
+- 4. The system updates the profile information in the database. 
+- 5. THe user is redirected their updated profile page. 
+- **Alternate Sequence:** 
+- 3. The user makes no edits to the form.
+- 3a. The “Submit” button will not appear clickable. 
+- **Post-conditions:** 
+- The user’s profile is updated. 
 
-13. Save Recipe (Favorites)
+13.  **Name:** Save Recipe (Favorites)
+Fewer than 3 primary sequence steps. 
 
 14. View All Recipes 
 
