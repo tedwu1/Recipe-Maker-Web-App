@@ -7,9 +7,9 @@ they plan to do next. If they are stuck, bring it up here to see if others can
 help.>
 - Ted worked on creating shared repository, uploading files, adding requirements/descriptions. Will work on first functional requirement. (60 mins)
 - Summarize group progress:
-- Natalie worked on use cases for requirements 5 - 10, fixed formatting for the meeting and readme files,  Will work on ???  
-- Ted worked on creating shared repository, uploading files, adding requirements/descriptions, use case for 1 - 4. Will work on ???
-- Hari worked on use cases for functional requirements 11 - 15. Will work on ??
+- Natalie worked on use cases for requirements 5 - 10, fixed formatting for the meeting and readme files,  Will work on implementing 2 requirements for Check in 2.
+- Ted worked on creating shared repository, uploading files, adding requirements/descriptions, use case for 1 - 4. Will work on implementing 2 requirements for Check in 2.
+- Hari worked on use cases for functional requirements 11 - 15. Will work on implementing 3 requirements for Check in 2.
 - Summary: Completed Milestone 1! 
 
 ### 2023-10-08 at 13:30

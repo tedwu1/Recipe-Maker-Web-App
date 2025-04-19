@@ -1,4 +1,4 @@
 # Recipe Maker Web App
 - Theodore Wu (@tedwu1)
 - Natalie Tran (@nataliehtran)
-- Name (@username)
+- Hari Kotamsetti (@AwesomenessReborn)
