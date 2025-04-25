@@ -1,0 +1,9 @@
+name: /home/hareee234/projects/school/CMPE131/final_proj/Recipe-Maker-Web-App/venv
+channels:
+  - https://repo.anaconda.com/pkgs/main
+  - https://repo.anaconda.com/pkgs/r
+dependencies:
+  - python=3.10
+  - flask
+  - sqlalchemy
+prefix: /home/hareee234/projects/school/CMPE131/final_proj/Recipe-Maker-Web-App/venv
