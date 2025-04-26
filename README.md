@@ -3,8 +3,6 @@
 - Natalie Tran (@nataliehtran)
 - Hari Kotamsetti (@AwesomenessReborn)
 
-
-
 ## Application Development Setup
 
 First, get the project locally using git provider. 
