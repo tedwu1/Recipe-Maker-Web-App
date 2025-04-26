@@ -13,10 +13,10 @@ help.>
 
 ### 2025-04-23 at 9:00 PM
 - Ted, Natalie, Hari
-- Ted
-- Natalie
-- Hari
-- Summary: Goal is to complete the 7 requirements
+- <Ted> Worked on 1/2 ethical implications, implemented functional requirement #1
+- <Natalie> Worked on 1/2 ethical implications, implemented requirement #2
+- <Hari> Worked on implementing #14, #4, #5, #6, #7 [HARI SAID HE WILL DO REQUIREMENT IN EXCHANGE FOR NOT WRITING ETHICS]
+- Summary: Goal is to complete the 7 requirements(but if we aim for P that's okay too) 
 
 ### 2023-10-15 at 10:30
 <meeting template would go here>
