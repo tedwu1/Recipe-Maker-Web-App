@@ -2,15 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}FlaskApp{% endblock %}</title>
+    <title>Page Not Found</title>
 </head>
 <body>
-    <nav>
-        <a href="{{ url_for('home') }}">Home</a>
-    </nav>
-    <hr>
-    <div class="content">
-        {% block content %}{% endblock %}
-    </div>
+    <h1>404 - Page Not Found</h1>
+    <a href="{{ url_for('home') }}">Back to Home</a>
 </body>
 </html>
