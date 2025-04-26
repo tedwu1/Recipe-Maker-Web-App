@@ -11,11 +11,12 @@ help.>
 <Hari>
 - Summary: Completed Milestone 1! 
 
-### 2023-10-08 at 13:30
-<meeting template would go here>
-<only fill in template once you had the meeting>
-<see example on the last date>
-<use date format YYYY-MM-DD at HH:MM>
+### 2025-04-23 at 9:00 PM
+- Ted, Natalie, Hari
+- Ted
+- Natalie
+- Hari
+- Summary: Goal is to complete the 7 requirements
 
 ### 2023-10-15 at 10:30
 <meeting template would go here>
