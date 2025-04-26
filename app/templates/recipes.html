@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}All Recipes{% endblock %}
+{% block content %}
+<h2>All Recipes</h2>
+<a href="{{ url_for('add_recipe') }}">Add New Recipe</a>
+<ul>
+{% for recipe in recipes %}
+    <li>
+        <strong>{{ recipe.title }}</strong> by {{ recipe.author.username }}<br>
+        <a href="#" onclick="document.getElementById('delete-form-{{ recipe.id }}').submit(); return false;">Delete</a>
+        <form id="delete-form-{{ recipe.id }}" action="{{ url_for('delete_recipe', recipe_id=recipe.id) }}" method="POST" style="display:none;">
+        </form>
+        <p>{{ recipe.description }}</p>
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}
