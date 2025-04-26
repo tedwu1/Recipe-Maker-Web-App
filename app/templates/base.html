@@ -17,8 +17,12 @@
     {% if user %}
         <p>Welcome, {{ user.username }}! <a href="{{ url_for('logout') }}">Logout</a></p>
     {% else %}
-        <p><a href="{{ url_for('login') }}">Login</a></p>
+        <p>
+            <a href="{{ url_for('login') }}">Login</a> |
+            <a href="{{ url_for('register') }}">Register</a>
+        </p>
     {% endif %}
+
     <h1>Recipe App Home</h1>
 </body>
 </html>
