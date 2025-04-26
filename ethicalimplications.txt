@@ -6,3 +6,10 @@ inclusive, and responsible. We will uphold the protection of our users' personal
  and their data will never be used for any malicious purposes. We highly discourage users from plagiarizing any content and 
  encourage them to credit any sources for recipes. We will moderate any comments or recipes that contain harassment, hate speech,
   or misinformation.
+  
+  This application can connect people from a wide range of cultural backgrounds by sharing their traditional food recipes.  
+  Since this application is free, it is an easy and accessible way for anyone to access homemade meals for all skill levels.
+  This application can also inspire environmentally friendly, low-waste recipes. This can be made clear through some tag-based 
+  filtering, where users can find zero-waste or vegan recipes. Cooking and the sharing of recipes have always been key links to 
+  building and strengthening a community, so this application can support social good by promoting community-made recipes and 
+  preserving traditional cuisines.
