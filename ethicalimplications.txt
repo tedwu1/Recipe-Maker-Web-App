@@ -1,0 +1,8 @@
+As developers of this Food Recipe Web Application, it is our ethical and professional responsibility to create a website that is safe, 
+inclusive, and responsible. We will uphold the protection of our users' personal information, such as emails and passwords.
+ We will use secure password hashing and the HTTPS protocol to protect our users' information. We will also make our website 
+ user-friendly for people of many backgrounds and abilities, as we will ensure that our website has the proper contrast and 
+ readable fonts. Users will also have control over their content, in which they can edit or delete their own recipes and information,
+ and their data will never be used for any malicious purposes. We highly discourage users from plagiarizing any content and 
+ encourage them to credit any sources for recipes. We will moderate any comments or recipes that contain harassment, hate speech,
+  or misinformation.
