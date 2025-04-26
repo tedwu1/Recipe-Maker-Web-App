@@ -1,0 +1,17 @@
+alembic==1.15.2
+blinker @ file:///croot/blinker_1737448726027/work
+click @ file:///croot/click_1744271578095/work
+Flask @ file:///croot/flask_1737454299809/work
+Flask-Login==0.6.3
+Flask-Migrate==4.1.0
+Flask-SQLAlchemy==3.1.1
+Flask-WTF==1.2.2
+greenlet @ file:///croot/greenlet_1733860072744/work
+itsdangerous @ file:///croot/itsdangerous_1716533337253/work
+Jinja2 @ file:///croot/jinja2_1741710844255/work
+Mako==1.3.10
+MarkupSafe @ file:///croot/markupsafe_1738584038848/work
+SQLAlchemy @ file:///croot/sqlalchemy_1736565039440/work
+typing_extensions @ file:///croot/typing_extensions_1734714854207/work
+Werkzeug @ file:///croot/werkzeug_1737448706492/work
+WTForms==3.2.1
