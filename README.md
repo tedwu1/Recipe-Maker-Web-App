@@ -27,3 +27,8 @@ pip install -r requirements.txt
 ```
 flask --app app run
 ```
+
+or alternatively, and simply: 
+```
+python3 run.py
+```
