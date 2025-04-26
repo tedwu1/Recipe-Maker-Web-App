@@ -1,14 +1,3 @@
-# from flask import render_template
-# from app import app
-
-# @app.route("/")
-# def home():
-#     return render_template("base.html")
-
-# @app.errorhandler(404)
-# def page_not_found(e):
-#     return render_template("404.html"), 404
-
 from flask import render_template, request, redirect, url_for, flash, session
 from app import app, db
 from app.models import User, Recipe
