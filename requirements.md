@@ -15,6 +15,9 @@
 13. Users can save or 'favorite' recipes for quick access later.
 14. Homepage or main recipe list shows all recipes available in the database.
 15. Users can filter recipes by tags like 'vegan', 'dessert', etc.
+16. The application interface should be easy to use and intuitive so that a new user can add a recipe without needing external help or documentation.
+17. The web application should be available 99% of the time, excluding scheduled maintenance.
+18. The system should load any recipe detail page within 2 seconds under normal network conditions.
 
 <using the syntax [](images/ui1.png) add images in a folder called images/ and place sketches of your webpages>
 
@@ -216,7 +219,25 @@ Fewer than 3 primary sequence steps.
 - The user’s profile is updated. 
 
 13.  **Name:** Save Recipe (Favorites)
-Fewer than 3 primary sequence steps. 
+- **Summary:** Users can save recipes to their "favorites" list for quicker access later.
+- **Actors:** User, System
+- **Pre-condition:** 
+- 1. The user is logged in.
+- 2. The user is on the page for viewing the recipe detail.
+- **Trigger:**: The user clicks the "Favorite" button on a recipe page. 
+- **Primary Sequence:**
+- 1. The user navigates to a specific recipe’s detail page.
+- 2. The user clicks the "Favorite" button.
+- 3. The system checks if the recipe is already saved to the user's favorites list.
+- 4. If the recipe is not yet saved, the system adds the recipe to the user's favorites in the database.
+- 5. The system displays a message to the user confirming the recipe was saved.
+- 6. The saved recipe becomes accessible from the user's profile or a “Favorites” tab.
+- **Alternate Sequence:** 
+- 1. The recipe is already in the "Favorites" list.
+- 1a. The system will display an error message “Recipe is already saved in Favorites"
+- **Post-conditions:** 
+- The recipe is either added to the user's list of saved recipes. 
+- The user can see their personal list of favorites at any time from their profile.
 
 14. View All Recipes 
 Fewer than 3 primary sequence steps. 
