@@ -2,11 +2,18 @@ from flask import render_template, request, redirect, url_for, flash, session
 from app import app, db
 from app.models import User, Recipe
 
+# @app.route("/")
+# def home():
+#     user_id = session.get('user_id')
+#     user = User.query.get(user_id) if user_id else None
+#     return render_template("base.html", user=user)
+
 @app.route("/")
 def home():
     user_id = session.get('user_id')
     user = User.query.get(user_id) if user_id else None
-    return render_template("base.html", user=user)
+    recipes = Recipe.query.all() if user else []
+    return render_template("base.html", user=user, recipes=recipes)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
