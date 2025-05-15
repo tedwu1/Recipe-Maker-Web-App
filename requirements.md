@@ -15,13 +15,14 @@
 13. Users can save or 'favorite' recipes for quick access later.
 14. Homepage or main recipe list shows all recipes available in the database.
 15. Users can filter recipes by tags like 'vegan', 'dessert', etc.
+16. Users can share recipes using a unique link. 
+17. Users can react to comments with a set of emojis. 
+18. Users shall be able to copy all ingredients of a recipe to Clipboard.
+
+## Non-functional Requirements
 16. The application interface should be easy to use and intuitive so that a new user can add a recipe without needing external help or documentation.
 17. The web application should be available 99% of the time, excluding scheduled maintenance.
 18. The system should load any recipe detail page within 2 seconds under normal network conditions.
-
-## Non-functional Requirements
-1. non-functional
-2. non-functional
 
 each of the 14 requirements will have a use case associated with it
 
@@ -256,3 +257,53 @@ Fewer than 3 primary sequence steps.
             - The system will display an error message “No Recipes Found” 
     - **Post-conditions:** 
         - The user sees recipes with specified filters. 
+
+16. Share Recipe 
+    - **Summary:** Users can share recipes using a unique link
+    - **Actors:** User, System
+    - **Pre-condition:** 
+        1. The user is logged in.
+    - **Trigger:**: The user presses the share button on a recipe. 
+    - **Primary Sequence:**
+        1. The system generates a link according to the unique title of the recipe. 
+        2. The system displays it in a text box. 
+        3. The user may copy the link. 
+    - **Alternate Sequences:** 
+        1. The recipe does not exist.  
+            - The system will display an error message “Recipe does not exist” 
+    - **Post-conditions:** 
+        - The user may paste link.
+
+ 17. Comment Reaction 
+     - **Summary:** Users can react to comments with an emoji.
+    - **Actors:** User, System
+    - **Pre-condition:** 
+        1. The user is logged in.
+    - **Trigger:**: The user presses the emoji button next to a comment. 
+    - **Primary Sequence:**
+        1. The system displays a set of emojis. 
+        2. The user clicks on their emoji of choice. 
+        3. The system saves the emoji to the comment in the database. 
+    - **Alternate Sequences:** 
+        1. The user does not select an emoji.  
+            - The system closes the set of emojis. 
+    - **Post-conditions:** 
+        - The comment has a reaction from the user.
+
+18. Copy all ingredients
+    - **Summary:** Users may be able to copy all of the ingredients of a recipe. 
+    - **Actors:** User, System
+    - **Pre-condition:** 
+        1. The user has a recipe open.
+    - **Trigger:**: The user presses the copy button on the recipe. 
+    - **Primary Sequence:**
+        1. The system pulls the ingredient list from the database. 
+        2. The system calls the Clipboard API to copy the string to the user's Clipboard. 
+        3. The system displays a confirmation pop-up. 
+    - **Alternate Sequences:** 
+        1. There are no ingredients in the recipe.  
+            - The system will not save anything to user's Clipboard 
+    - **Post-conditions:** 
+        - The user has all of the ingredients copied to their Clipboard . 
+
+
