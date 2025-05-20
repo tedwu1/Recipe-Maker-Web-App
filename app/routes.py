@@ -133,18 +133,47 @@ def view_recipe(recipe_id):
     user = get_current_user(); recipe = Recipe.query.get_or_404(recipe_id)
     return render_template('view_recipe.html',recipe=recipe,user=user)
 
-# View profile (user-only)
+# View profile
 @app.route('/profile')
 def profile():
     user = get_current_user()
     if not user:
         flash("You must be logged in to view your profile.","danger")
         return redirect(url_for('login'))
-    # fetch user's recipes
     my_recipes = Recipe.query.filter_by(user_id=user.id).all()
     return render_template('profile.html', user=user, recipes=my_recipes)
+
+# Edit profile
+@app.route('/profile/edit', methods=['GET','POST'])
+def edit_profile():
+    user = get_current_user()
+    if not user:
+        flash("Log in to edit your profile.","danger")
+        return redirect(url_for('login'))
+    if request.method=='POST':
+        # gather inputs
+        new_username = request.form.get('username','').strip()
+        new_email = request.form.get('email','').strip()
+        new_password = request.form.get('password','').strip()
+        # validate
+        if not(new_username and new_email):
+            flash("Username and email cannot be blank.","danger")
+            return render_template('edit_profile.html',user=user)
+        # check uniqueness
+        if new_email!=user.email and User.query.filter_by(email=new_email).first():
+            flash("Email already in use.","warning")
+            return render_template('edit_profile.html',user=user)
+        # apply updates
+        user.username = new_username
+        user.email = new_email
+        if new_password:
+            user.password = generate_password_hash(new_password)
+        db.session.commit()
+        flash("Profile updated!", "success")
+        return redirect(url_for('profile'))
+    return render_template('edit_profile.html', user=user)
 
 # 404 handler
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template("404.html", user=get_current_user()), 404
+    return render_template("404.html", user=get_current_user()),404
