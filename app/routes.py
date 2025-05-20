@@ -19,7 +19,8 @@ def get_current_user():
 @app.route("/")
 def home():
     user = get_current_user()
-    return render_template("base.html", user=user)
+    recipes = Recipe.query.all()
+    return render_template("recipes.html", recipes=recipes, user=user)
 
 # Login
 @app.route("/login", methods=["GET","POST"])
