@@ -10,18 +10,19 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from . import app, db
 from .models import User, Recipe
 
+# helper to get current user
 def get_current_user():
     uid = session.get("user_id")
     return User.query.get(uid) if uid else None
 
-# Home route
+# Home
 @app.route("/")
 def home():
     user = get_current_user()
     return render_template("base.html", user=user)
 
 # Login
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET","POST"])
 def login():
     if request.method == "POST":
         email = request.form.get("email", "").strip()
@@ -35,7 +36,7 @@ def login():
     return render_template("login.html")
 
 # Register
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register", methods=["GET","POST"])
 def register():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
@@ -44,14 +45,11 @@ def register():
         if not (username and email and password):
             flash("All fields are required.", "danger")
             return render_template("register.html")
-        if User.query.filter((User.username == username) | (User.email == email)).first():
+        if User.query.filter((User.username==username)|(User.email==email)).first():
             flash("Username or email already exists.", "warning")
             return render_template("register.html")
-        new = User(
-            username=username,
-            email=email,
-            password=generate_password_hash(password)
-        )
+        new = User(username=username, email=email,
+                   password=generate_password_hash(password))
         db.session.add(new)
         db.session.commit()
         flash("Account created! Please log in.", "success")
@@ -65,7 +63,7 @@ def logout():
     flash("Logged out.", "info")
     return redirect(url_for("home"))
 
-# List all recipes
+# List recipes
 @app.route("/recipes")
 def recipes():
     user = get_current_user()
@@ -73,17 +71,17 @@ def recipes():
     return render_template("recipes.html", recipes=all_recipes, user=user)
 
 # Add recipe
-@app.route("/recipes/add", methods=["GET", "POST"])
+@app.route("/recipes/add", methods=["GET","POST"])
 def add_recipe():
     user = get_current_user()
     if not user:
         flash("You must be logged in to add a recipe.", "danger")
         return redirect(url_for("login"))
     if request.method == "POST":
-        title = request.form.get("title", "").strip()
-        description = request.form.get("description", "").strip()
-        ingredients = request.form.get("ingredients", "").strip()
-        instructions = request.form.get("instructions", "").strip()
+        title = request.form.get("title","" ).strip()
+        description = request.form.get("description","" ).strip()
+        ingredients = request.form.get("ingredients","" ).strip()
+        instructions = request.form.get("instructions","" ).strip()
         if not (title and description and ingredients and instructions):
             flash("All fields are required.", "danger")
             return render_template("add_recipe.html", user=user)
@@ -101,50 +99,81 @@ def add_recipe():
     return render_template("add_recipe.html", user=user)
 
 # Edit recipe
-@app.route('/recipes/edit/<int:recipe_id>', methods=['GET', 'POST'])
+@app.route('/recipes/edit/<int:recipe_id>', methods=['GET','POST'])
 def edit_recipe(recipe_id):
-    user = get_current_user()
+    user = get_current_user(); recipe = Recipe.query.get_or_404(recipe_id)
     if not user:
-        flash("You must be logged in to edit a recipe.", "danger")
-        return redirect(url_for('login'))
-    recipe = Recipe.query.get_or_404(recipe_id)
+        flash("Log in to edit recipes.","danger"); return redirect(url_for('login'))
     if recipe.user_id != user.id:
-        flash("You can only edit your own recipes.", "danger")
+        flash("Only owners can edit.","danger"); return redirect(url_for('recipes'))
+    if request.method=='POST':
+        recipe.title = request.form.get('title','').strip()
+        recipe.description = request.form.get('description','').strip()
+        recipe.ingredients = request.form.get('ingredients','').strip()
+        recipe.instructions = request.form.get('instructions','').strip()
+        if not all([recipe.title,recipe.description,recipe.ingredients,recipe.instructions]):
+            flash("All fields required.","danger")
+            return render_template('edit_recipe.html',user=user,recipe=recipe)
+        db.session.commit(); flash("Recipe updated!","success")
         return redirect(url_for('recipes'))
-    if request.method == 'POST':
-        recipe.title = request.form.get('title', '').strip()
-        recipe.description = request.form.get('description', '').strip()
-        recipe.ingredients = request.form.get('ingredients', '').strip()
-        recipe.instructions = request.form.get('instructions', '').strip()
-        if not (recipe.title and recipe.description and recipe.ingredients and recipe.instructions):
-            flash("All fields are required.", "danger")
-            return render_template('edit_recipe.html', user=user, recipe=recipe)
-        db.session.commit()
-        flash("Recipe updated!", "success")
-        return redirect(url_for('recipes'))
-    return render_template('edit_recipe.html', user=user, recipe=recipe)
+    return render_template('edit_recipe.html',user=user,recipe=recipe)
 
 # Delete recipe
 @app.route('/recipes/delete/<int:recipe_id>', methods=['POST'])
 def delete_recipe(recipe_id):
-    user = get_current_user()
-    recipe = Recipe.query.get_or_404(recipe_id)
+    user = get_current_user(); recipe = Recipe.query.get_or_404(recipe_id)
     if not user or recipe.user_id != user.id:
-        flash("You can only delete your own recipes.", "danger")
-        return redirect(url_for("recipes"))
-    db.session.delete(recipe)
-    db.session.commit()
-    flash("Recipe deleted.", "info")
-    return redirect(url_for("recipes"))
+        flash("Only owners can delete.","danger"); return redirect(url_for('recipes'))
+    db.session.delete(recipe); db.session.commit(); flash("Recipe deleted.","info")
+    return redirect(url_for('recipes'))
 
-# View single recipe (public)
+# View recipe (public)
 @app.route('/recipes/<int:recipe_id>')
 def view_recipe(recipe_id):
+    user = get_current_user(); recipe = Recipe.query.get_or_404(recipe_id)
+    return render_template('view_recipe.html',recipe=recipe,user=user)
+
+# View profile
+@app.route('/profile')
+def profile():
     user = get_current_user()
-    recipe = Recipe.query.get_or_404(recipe_id)
-    return render_template('view_recipe.html', recipe=recipe, user=user)
+    if not user:
+        flash("You must be logged in to view your profile.","danger")
+        return redirect(url_for('login'))
+    my_recipes = Recipe.query.filter_by(user_id=user.id).all()
+    return render_template('profile.html', user=user, recipes=my_recipes)
+
+# Edit profile
+@app.route('/profile/edit', methods=['GET','POST'])
+def edit_profile():
+    user = get_current_user()
+    if not user:
+        flash("Log in to edit your profile.","danger")
+        return redirect(url_for('login'))
+    if request.method=='POST':
+        # gather inputs
+        new_username = request.form.get('username','').strip()
+        new_email = request.form.get('email','').strip()
+        new_password = request.form.get('password','').strip()
+        # validate
+        if not(new_username and new_email):
+            flash("Username and email cannot be blank.","danger")
+            return render_template('edit_profile.html',user=user)
+        # check uniqueness
+        if new_email!=user.email and User.query.filter_by(email=new_email).first():
+            flash("Email already in use.","warning")
+            return render_template('edit_profile.html',user=user)
+        # apply updates
+        user.username = new_username
+        user.email = new_email
+        if new_password:
+            user.password = generate_password_hash(new_password)
+        db.session.commit()
+        flash("Profile updated!", "success")
+        return redirect(url_for('profile'))
+    return render_template('edit_profile.html', user=user)
 
 # 404 handler
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template("404.html", user=get_current_user()), 404
+    return render_template("404.html", user=get_current_user()),404

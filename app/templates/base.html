@@ -1,35 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{% block title %}Recipe App{% endblock %}</title>
-</head>
+<head><meta charset="UTF-8"><title>{% block title %}Recipe App{% endblock %}</title></head>
 <body>
   <nav>
     {% if user %}
       Hello, {{ user.username }} |
+      <a href="{{ url_for('profile') }}">View Profile</a> |
+      <a href="{{ url_for('edit_profile') }}">Edit Profile</a> |
       <a href="{{ url_for('logout') }}">Logout</a>
     {% else %}
       <a href="{{ url_for('login') }}">Login</a> |
       <a href="{{ url_for('register') }}">Register</a>
     {% endif %}
     | <a href="{{ url_for('recipes') }}">All Recipes</a>
-    {% if user %}
-      | <a href="{{ url_for('add_recipe') }}">+ Add Recipe</a>
-    {% endif %}
+    {% if user %}| <a href="{{ url_for('add_recipe') }}">+ Add Recipe</a>{% endif %}
   </nav>
   <hr>
-
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <ul>
-        {% for category, msg in messages %}
-          <li class="{{ category }}">{{ msg }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
-
+  {% with msgs=get_flashed_messages(with_categories=true) %}{% if msgs %}<ul>{% for c,m in msgs %}<li class="{{ c }}">{{ m }}</li>{% endfor %}</ul>{% endif %}{% endwith %}
   {% block content %}{% endblock %}
 </body>
 </html>
