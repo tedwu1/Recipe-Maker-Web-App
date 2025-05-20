@@ -3,6 +3,16 @@
 
 {% block content %}
   <h2>All Recipes</h2>
+  
+  <!-- Search form -->
+  <form method="GET" action="{{ url_for('recipes') }}">
+    <input type="text" name="search" placeholder="Search recipes by title or ingredients" value="{{ request.args.get('search', '') }}">
+    <button type="submit">Search</button>
+    {% if request.args.get('search') %}
+      <a href="{{ url_for('recipes') }}">Clear Search</a>
+    {% endif %}
+  </form>
+  <br>
   <table border="1" cellpadding="5">
     <thead>
       <tr>

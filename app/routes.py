@@ -68,7 +68,17 @@ def logout():
 @app.route("/recipes")
 def recipes():
     user = get_current_user()
-    all_recipes = Recipe.query.all()
+    search_query = request.args.get('search', '').strip()
+    
+    if search_query:
+        # Search by title or ingredients (case-insensitive)
+        all_recipes = Recipe.query.filter(
+            (Recipe.title.ilike(f'%{search_query}%')) | 
+            (Recipe.ingredients.ilike(f'%{search_query}%'))
+        ).all()
+    else:
+        all_recipes = Recipe.query.all()
+    
     return render_template("recipes.html", recipes=all_recipes, user=user)
 
 # Add recipe
