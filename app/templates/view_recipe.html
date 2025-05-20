@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}View Recipe{% endblock %}
+
+{% block content %}
+  <h2>{{ recipe.title }}</h2>
+  <p><strong>Description:</strong> {{ recipe.description }}</p>
+  <p><strong>Ingredients:</strong></p>
+  <pre>{{ recipe.ingredients }}</pre>
+  <p><strong>Instructions:</strong></p>
+  <pre>{{ recipe.instructions }}</pre>
+  <p>By: {{ recipe.author.username }}</p>
+
+  <a href="{{ url_for('recipes') }}">← Back to all recipes</a>
+{% endblock %}

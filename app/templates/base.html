@@ -1,70 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Recipe App</title>
+  <meta charset="UTF-8">
+  <title>{% block title %}Recipe App{% endblock %}</title>
 </head>
 <body>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul>
-        {% for category, message in messages %}
-          <li><strong>{{ category.title() }}:</strong> {{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+  <nav>
     {% if user %}
-        <p>Welcome, {{ user.username }}! <a href="{{ url_for('logout') }}">Logout</a></p>
+      Hello, {{ user.username }} |
+      <a href="{{ url_for('logout') }}">Logout</a>
     {% else %}
-        <p>
-            <a href="{{ url_for('login') }}">Login</a> |
-            <a href="{{ url_for('register') }}">Register</a>
-        </p>
+      <a href="{{ url_for('login') }}">Login</a> |
+      <a href="{{ url_for('register') }}">Register</a>
     {% endif %}
-
-    <h1>Recipe App Home</h1>
-
-    {% block content %}
+    | <a href="{{ url_for('recipes') }}">All Recipes</a>
     {% if user %}
-      <nav>
-        <a href="{{ url_for('recipes') }}">View All Recipes</a> |
-        <a href="{{ url_for('add_recipe') }}">Add New Recipe</a>
-      </nav>
-
-      {% if recipes %}
-      <table border="1" cellpadding="5">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for recipe in recipes %}
-          <tr>
-            <td>{{ recipe.title }}</td>
-            <td>{{ recipe.description }}</td>
-            <td>
-              <form action="{{ url_for('delete_recipe', recipe_id=recipe.id) }}" method="post" style="display:inline;">
-                <!-- <button type="submit" onclick="return confirm('Delete "{{ recipe.title }}"?');">Delete</button> -->
-<button
-  type="submit"
-  onclick="return confirm('Delete \"{{ recipe.title }}\"?');"
->
-  Delete
-</button>
-              </form>
-            </td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-      {% else %}
-        <p>No recipes yet. <a href="{{ url_for('add_recipe') }}">Add one now.</a></p>
-      {% endif %}
+      | <a href="{{ url_for('add_recipe') }}">+ Add Recipe</a>
     {% endif %}
-    {% endblock %}
+  </nav>
+  <hr>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul>
+        {% for category, msg in messages %}
+          <li class="{{ category }}">{{ msg }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
 </body>
 </html>
