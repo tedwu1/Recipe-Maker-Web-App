@@ -1,28 +1,49 @@
 {% extends "base.html" %}
 {% block title %}Add Recipe{% endblock %}
+
 {% block content %}
-<h2>Add New Recipe</h2>
-<form method="POST">
-    <label>Title:</label><br>
-    <input type="text" name="title" required><br>
-    <label>Description:</label><br>
-    <textarea name="description" required></textarea><br>
-    <label>Ingredients:</label><br>
-    <textarea name="ingredients" required></textarea><br>
-    <label>Instructions:</label><br>
-    <textarea name="instructions" required></textarea><br>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="mb-4">Add New Recipe</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" id="title" name="title" class="form-control" required
+                    value="{{ request.form.title or '' }}">
+            </div>
 
-    <label for="tags">Tags</label>
-    <select name="tags" id="tags" multiple>
-    {% for tag in tags %}
-        <option value="{{ tag.id }}"
-        {% if tag.id|string in request.form.getlist('tags') %} selected {% endif %}>
-        {{ tag.name }}
-        </option>
-    {% endfor %}
-    </select>
-    <p class="help-text">Hold Ctrl (CMD on Mac) to select multiple.</p>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea id="description" name="description" class="form-control" rows="3"
+                    required>{{ request.form.description or '' }}</textarea>
+            </div>
 
-    <input type="submit" value="Add Recipe">
-</form>
+            <div class="mb-3">
+                <label for="ingredients" class="form-label">Ingredients</label>
+                <textarea id="ingredients" name="ingredients" class="form-control" rows="4"
+                    required>{{ request.form.ingredients or '' }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="instructions" class="form-label">Instructions</label>
+                <textarea id="instructions" name="instructions" class="form-control" rows="5"
+                    required>{{ request.form.instructions or '' }}</textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="new_tags" class="form-label">Recipe Tags (comma-separated)</label>
+                <input type="text" id="new_tags" name="new_tags" class="form-control"
+                    placeholder="e.g. vegan, quick, kid-friendly" value="{{ request.form.new_tags or '' }}">
+                <div class="form-text">
+                    If the tag doesn't exist yet, it'll be created automatically.
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="bi-plus-lg me-1"></i> Add Recipe
+            </button>
+            <a href="{{ url_for('recipes') }}" class="btn btn-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
 {% endblock %}

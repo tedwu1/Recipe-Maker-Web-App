@@ -97,11 +97,11 @@ def add_recipe():
         ingredients  = request.form.get("ingredients","").strip()
         instructions = request.form.get("instructions","").strip()
         selected_ids = request.form.getlist("tags")  
+        new_tag_str  = request.form.get("new_tag","").strip()
 
         if not (title and description and ingredients and instructions):
             flash("All fields are required.", "danger")
             return render_template("add_recipe.html", user=user, tags=all_tags)
-
 
         new = Recipe(
             title=title,
