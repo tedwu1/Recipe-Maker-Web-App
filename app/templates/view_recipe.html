@@ -4,8 +4,12 @@
 {% block content %}
   <h2>{{ recipe.title }}</h2>
   <p><strong>Description:</strong> {{ recipe.description }}</p>
+
   <p><strong>Ingredients:</strong></p>
-  <pre>{{ recipe.ingredients }}</pre>
+  <!-- give this pre an id so we can grab it in JS -->
+  <pre id="ingredients">{{ recipe.ingredients }}</pre>
+  <button type="button" onclick="copyIngredients()">Copy Ingredients</button>
+
   <p><strong>Instructions:</strong></p>
   <pre>{{ recipe.instructions }}</pre>
   <p><em>By {{ recipe.author.username }}</em></p>
@@ -51,6 +55,27 @@
       input.select();
       document.execCommand('copy');
       alert('Recipe URL copied to clipboard!');
+    }
+
+    function copyIngredients() {
+      const text = document.getElementById('ingredients').innerText;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text)
+          .then(() => alert('Ingredients copied to clipboard!'))
+          .catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      alert('Ingredients copied to clipboard!');
     }
   </script>
 {% endblock %}
