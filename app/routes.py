@@ -8,7 +8,7 @@ from flask import (
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import app, db
-from .models import User, Recipe, Rating
+from .models import User, Recipe, Rating, Tag, recipe_tags
 
 # helper to get current user
 def get_current_user():
