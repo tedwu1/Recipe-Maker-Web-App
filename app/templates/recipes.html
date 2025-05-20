@@ -22,8 +22,9 @@
             {% if recipe.ratings %}
               {{ recipe.avg_rating() }} / 5
               <span style="color: #ffcc00;">
-                {% for i in range(round(recipe.avg_rating())) %}★{% endfor %}
-                {% for i in range(5 - round(recipe.avg_rating())) %}☆{% endfor %}
+                {% set stars = (recipe.avg_rating()|round)|int %}
+                {% for i in range(stars) %}★{% endfor %}
+                {% for i in range(5 - stars) %}☆{% endfor %}
               </span>
               ({{ recipe.ratings|length }})
             {% else %}

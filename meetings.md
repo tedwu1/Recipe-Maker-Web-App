@@ -18,7 +18,10 @@ help.>
 - <Hari> Worked on implementing #14, #4, #5, #6, #7 [HARI SAID HE WILL DO REQUIREMENT IN EXCHANGE FOR NOT WRITING ETHICS]
 - Summary: Goal is to complete the 7 requirements(but if we aim for P that's okay too) 
 
-### 2023-10-15 at 10:30
-<meeting template would go here>
-<only fill in template once you had the meeting>
+### 2025-05-15 @ 10 PM
+- Ted, Natalie, Hari
+- <Ted> will complete at least 2 functional requirements for the final milestone not including previous ones
+- <Natalie> will complete at least 4 functional requirements for the final milestone not including previous ones
+- <Hari> will complete at least 4 functional requirements for the final milestone not including previous ones
+- Summary: Goal is to complete at least 15 functional requirements
 
