@@ -9,6 +9,7 @@ from flask import (
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import app, db
 from .models import User, Recipe, Rating, Tag, recipe_tags
+import json
 
 # helper to get current user
 def get_current_user():
@@ -96,14 +97,19 @@ def add_recipe():
         description  = request.form.get("description","").strip()
         ingredients  = request.form.get("ingredients","").strip()
         instructions = request.form.get("instructions","").strip()
-        selected_ids = request.form.getlist("tags")  
-        new_tag_str  = request.form.get("new_tag","").strip()
+
+        tags_json = request.form.get("tags", "[]")
+        try: 
+            tag_data = json.loads(tags_json)
+            tag_names = [t["value"].strip().lower() for t in tag_data if t.get("value","").strip()]
+        except (ValueError, TypeError):
+            tag_names = []
 
         if not (title and description and ingredients and instructions):
             flash("All fields are required.", "danger")
             return render_template("add_recipe.html", user=user, tags=all_tags)
 
-        new = Recipe(
+        recipe = Recipe(
             title=title,
             description=description,
             ingredients=ingredients,
@@ -111,13 +117,23 @@ def add_recipe():
             user_id=user.id
         )
 
-        if selected_ids: 
-            new.tags = Tag.query.filter(Tag.id.in_(selected_ids)).all()
+        tag_objs = []
+        for name in set(tag_names):
+            tag = Tag.query.filter_by(name=name).first()
+            if not tag:
+                tag = Tag(name=name)
+                db.session.add(tag)
+                # ensure it gets an ID before we append
+                db.session.flush()
+            tag_objs.append(tag)
 
-        db.session.add(new)
+        recipe.tags = tag_objs
+
+        db.session.add(recipe)
         db.session.commit()
         flash("Recipe added!", "success")
         return redirect(url_for("recipes"))
+
     return render_template("add_recipe.html", user=user, tags=all_tags)
 
 # Edit recipe

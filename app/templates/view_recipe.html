@@ -2,177 +2,148 @@
 {% block title %}View Recipe{% endblock %}
 
 {% block content %}
-  <h2>{{ recipe.title }}</h2>
-  
-  <!-- display average rating -->
-  <div class="rating-display">
-    <p>
-      <strong>Rating:</strong> 
-      {% if recipe.ratings %}
-        {{ recipe.avg_rating() }} / 5 ({{ recipe.ratings|length }} rating{% if recipe.ratings|length != 1 %}s{% endif %})
-      {% else %}
-        No ratings yet
-      {% endif %}
-    </p>
-  </div>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
 
-  <p><strong>Description:</strong> {{ recipe.description }}</p>
-
-  <p><strong>Ingredients:</strong></p>
-  <!-- give this pre an id so we can grab it in JS -->
-  <pre id="ingredients">{{ recipe.ingredients }}</pre>
-  <button type="button" onclick="copyIngredients()">Copy Ingredients</button>
-
-  <p><strong>Instructions:</strong></p>
-  <pre>{{ recipe.instructions }}</pre>
-  <p><em>By {{ recipe.author.username }}</em></p>
-
-  <hr>
-  
-<!-- rating form -->
-{% if user %}
-  <h3>Rate this recipe</h3>
-  <form method="POST" action="{{ url_for('rate_recipe', recipe_id=recipe.id) }}">
-    <div class="star-rating">
-      <input type="radio" id="star5" name="rating" value="5" {% if user_rating and user_rating.value == 5 %}checked{% endif %} required>
-      <label for="star5">★</label>
-      <input type="radio" id="star4" name="rating" value="4" {% if user_rating and user_rating.value == 4 %}checked{% endif %}>
-      <label for="star4">★</label>
-      <input type="radio" id="star3" name="rating" value="3" {% if user_rating and user_rating.value == 3 %}checked{% endif %}>
-      <label for="star3">★</label>
-      <input type="radio" id="star2" name="rating" value="2" {% if user_rating and user_rating.value == 2 %}checked{% endif %}>
-      <label for="star2">★</label>
-      <input type="radio" id="star1" name="rating" value="1" {% if user_rating and user_rating.value == 1 %}checked{% endif %}>
-      <label for="star1">★</label>
-    </div>
-    <div>
-      <label for="comment">Review (optional):</label><br>
-      <textarea id="comment" name="comment" rows="3">{{ user_rating.comment if user_rating else '' }}</textarea>
-    </div>
-    <button type="submit">{% if user_rating %}Update{% else %}Submit{% endif %} Rating</button>
-  </form>
-{% else %}
-  <p><a href="{{ url_for('login') }}">Log in</a> to rate this recipe.</p>
-{% endif %}
-  
-  <hr>
-  
-  <!-- Display ratings with reviews -->
-  <h3>Ratings & Reviews</h3>
-  {% if recipe.ratings %}
-    <ul class="reviews-list">
-      {% for rating in recipe.ratings %}
-        <li>
-          <div class="review">
-            <div class="stars">
-              {% for i in range(rating.value) %}★{% endfor %}
-              {% for i in range(5 - rating.value) %}☆{% endfor %}
+        <!-- Recipe Header Card -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h1 class="card-title">{{ recipe.title }}</h1>
+                <p class="text-muted mb-2">
+                    By <strong>{{ recipe.author.username }}</strong>
+                </p>
+                <div class="mb-3">
+                    {% if recipe.ratings %}
+                    <span class="badge bg-warning text-dark me-2">
+                        {{ recipe.avg_rating() }} / 5
+                    </span>
+                    <small class="text-muted">({{ recipe.ratings|length }} review{% if recipe.ratings|length != 1 %}s{%
+                        endif %})</small>
+                    {% else %}
+                    <span class="badge bg-secondary">No ratings yet</span>
+                    {% endif %}
+                </div>
+                <p class="card-text">{{ recipe.description }}</p>
             </div>
-            <div class="reviewer">
-              <strong>{{ rating.user.username }}</strong>
-              <span class="date">{{ rating.created_at.strftime('%Y-%m-%d') }}</span>
+        </div>
+
+        <!-- Ingredients & Instructions -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-subtitle mb-3">Ingredients</h5>
+                <pre class="bg-light p-3 rounded" id="ingredients">{{ recipe.ingredients }}</pre>
+                <button class="btn btn-outline-primary btn-sm mb-4" onclick="copyIngredients()">
+                    Copy Ingredients
+                </button>
+
+                <h5 class="card-subtitle mb-3">Instructions</h5>
+                <pre class="bg-light p-3 rounded">{{ recipe.instructions }}</pre>
             </div>
-            {% if rating.comment %}
-              <p class="comment">{{ rating.comment }}</p>
+        </div>
+
+        <!-- Rating Form -->
+        {% if user %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Your Review</h5>
+                <form method="POST" action="{{ url_for('rate_recipe', recipe_id=recipe.id) }}">
+                    <div class="mb-3">
+                        <label class="form-label">Rating</label>
+                        <div class="star-rating d-flex flex-row-reverse justify-content-end mb-3">
+                            {% for val in [5,4,3,2,1] %}
+                            <input type="radio" id="star{{ val }}" name="rating" value="{{ val }}" class="d-none" {% if
+                                user_rating and user_rating.value==val %}checked{% endif %} required>
+                            <label for="star{{ val }}" class="mx-1 fs-2">
+                                &#9733;
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Review (optional)</label>
+                        <textarea id="comment" name="comment" class="form-control"
+                            rows="3">{{ user_rating.comment if user_rating else '' }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        {% if user_rating %}Update{% else %}Submit{% endif %} Review
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <p>
+            <a href="{{ url_for('login') }}">Log in</a> to leave a rating.
+        </p>
+        {% endif %}
+
+        <!-- Reviews List -->
+        <div class="mb-4">
+            <h5>All Reviews</h5>
+            {% if recipe.ratings %}
+            <ul class="list-group">
+                {% for rating in recipe.ratings %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="text-warning">
+                            {% for i in range(rating.value) %}&#9733;{% endfor %}
+                            {% for i in range(5 - rating.value) %}&#9734;{% endfor %}
+                        </div>
+                        <small class="text-muted">
+                            {{ rating.user.username }} on {{ rating.created_at.strftime('%Y-%m-%d') }}
+                        </small>
+                    </div>
+                    {% if rating.comment %}
+                    <p class="mb-0">{{ rating.comment }}</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted">No reviews yet. Be the first to review!</p>
             {% endif %}
-          </div>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No ratings or reviews yet. Be the first to rate this recipe!</p>
-  {% endif %}
+        </div>
 
-  <hr>
-  <h3>Share this recipe</h3>
-  <div>
-    <input type="text" id="share-link" value="{{ request.url }}" readonly style="width:80%">
-    <button type="button" onclick="copyLink()">Copy Link</button>
-  </div>
+        <!-- Share Link -->
+        <div class="card mb-5">
+            <div class="card-body">
+                <h5 class="card-subtitle mb-2">Share this recipe</h5>
+                <div class="input-group">
+                    <input type="text" id="share-link" class="form-control" value="{{ request.url }}" readonly>
+                    <button class="btn btn-outline-secondary" type="button" onclick="copyLink()">
+                        Copy Link
+                    </button>
+                </div>
+            </div>
+        </div>
 
-  <p><a href="{{ url_for('recipes') }}">&larr; Back to all recipes</a></p>
+        <a href="{{ url_for('recipes') }}" class="btn btn-link">&larr; Back to all recipes</a>
+    </div>
+</div>
 
-  <script>
+<script>
     function copyLink() {
-      const input = document.getElementById('share-link');
-      input.select();
-      document.execCommand('copy');
-      alert('Recipe URL copied to clipboard!');
+        const input = document.getElementById('share-link');
+        input.select();
+        navigator.clipboard.writeText(input.value)
+            .then(() => alert('Link copied!'));
     }
 
     function copyIngredients() {
-      const text = document.getElementById('ingredients').innerText;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
+        const text = document.getElementById('ingredients').innerText;
         navigator.clipboard.writeText(text)
-          .then(() => alert('Ingredients copied to clipboard!'))
-          .catch(() => fallbackCopy(text));
-      } else {
-        fallbackCopy(text);
-      }
+            .then(() => alert('Ingredients copied!'));
+    }
+</script>
+
+<style>
+    /* Highlight checked stars */
+    .star-rating input:checked~label {
+        color: #ffc107;
     }
 
-    function fallbackCopy(text) {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      alert('Ingredients copied to clipboard!');
-    }
-  </script>
-  
-  <style>
-    .star-rating {
-      display: flex;
-      flex-direction: row-reverse;
-      justify-content: flex-end;
-      margin-bottom: 10px;
-    }
-    
-    .star-rating input {
-      display: none;
-    }
-    
-    .star-rating label {
-      font-size: 30px;
-      color: #ccc;
-      cursor: pointer;
-    }
-    
-    .star-rating input:checked ~ label {
-      color: #ffcc00;
-    }
-    
     .star-rating label:hover,
-    .star-rating label:hover ~ label {
-      color: #ffcc00;
+    .star-rating label:hover~label {
+        color: #ffca2c;
     }
-    
-    .reviews-list {
-      list-style-type: none;
-      padding: 0;
-    }
-    
-    .review {
-      margin-bottom: 15px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 10px;
-    }
-    
-    .stars {
-      color: #ffcc00;
-      font-size: 18px;
-    }
-    
-    .reviewer {
-      margin: 5px 0;
-    }
-    
-    .date {
-      color: #666;
-      font-size: 0.9em;
-      margin-left: 10px;
-    }
-  </style>
+</style>
 {% endblock %}
