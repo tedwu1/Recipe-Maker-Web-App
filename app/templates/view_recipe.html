@@ -4,45 +4,53 @@
 {% block content %}
   <h2>{{ recipe.title }}</h2>
   <p><strong>Description:</strong> {{ recipe.description }}</p>
-  
-  <div style="display: flex; align-items: center;">
-    <p><strong>Ingredients:</strong></p>
-    <button id="copyIngredientsBtn" style="margin-left: 10px; padding: 3px 8px; cursor: pointer;">
-      Copy to Clipboard
-    </button>
-  </div>
-  
-  <pre id="ingredientsText">{{ recipe.ingredients }}</pre>
+  <p><strong>Ingredients:</strong></p>
+  <pre>{{ recipe.ingredients }}</pre>
   <p><strong>Instructions:</strong></p>
   <pre>{{ recipe.instructions }}</pre>
-  <p>By: {{ recipe.author.username }}</p>
+  <p><em>By {{ recipe.author.username }}</em></p>
 
-  <a href="{{ url_for('recipes') }}">← Back to all recipes</a>
-  
+  <hr>
+  <h3>Share this recipe</h3>
+  <div>
+    <input type="text" id="share-link" value="{{ request.url }}" readonly style="width:80%">
+    <button type="button" onclick="copyLink()">Copy Link</button>
+  </div>
+
+  <hr>
+  <h3>Comments</h3>
+  {% if comments %}
+    <ul>
+      {% for comment in comments %}
+        <li>
+          <strong>{{ comment.author.username }}</strong>
+          <em>({{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }})</em>:<br>
+          {{ comment.body }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No comments yet.</p>
+  {% endif %}
+
+  {% if user %}
+    <form method="POST">
+      <label for="comment">Add a comment:</label><br>
+      <textarea id="comment" name="comment" rows="4" required></textarea><br>
+      <button type="submit">Submit Comment</button>
+    </form>
+  {% else %}
+    <p><a href="{{ url_for('login') }}">Log in</a> to leave a comment.</p>
+  {% endif %}
+
+  <p><a href="{{ url_for('recipes') }}">&larr; Back to all recipes</a></p>
+
   <script>
-    document.getElementById('copyIngredientsBtn').addEventListener('click', function() {
-      const ingredientsText = document.getElementById('ingredientsText').textContent;
-      
-      // use the Clipboard API to copy the text
-      navigator.clipboard.writeText(ingredientsText)
-        .then(() => {
-          // show success message
-          const originalText = this.textContent;
-          this.textContent = 'Copied!';
-          this.style.backgroundColor = '#4CAF50';
-          this.style.color = 'white';
-          
-          // reset button text after 2 seconds
-          setTimeout(() => {
-            this.textContent = originalText;
-            this.style.backgroundColor = '';
-            this.style.color = '';
-          }, 2000);
-        })
-        .catch(err => {
-          console.error('Failed to copy: ', err);
-          alert('Failed to copy ingredients. Please try again.');
-        });
-    });
+    function copyLink() {
+      const input = document.getElementById('share-link');
+      input.select();
+      document.execCommand('copy');
+      alert('Recipe URL copied to clipboard!');
+    }
   </script>
 {% endblock %}
