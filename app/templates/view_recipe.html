@@ -4,11 +4,45 @@
 {% block content %}
   <h2>{{ recipe.title }}</h2>
   <p><strong>Description:</strong> {{ recipe.description }}</p>
-  <p><strong>Ingredients:</strong></p>
-  <pre>{{ recipe.ingredients }}</pre>
+  
+  <div style="display: flex; align-items: center;">
+    <p><strong>Ingredients:</strong></p>
+    <button id="copyIngredientsBtn" style="margin-left: 10px; padding: 3px 8px; cursor: pointer;">
+      Copy to Clipboard
+    </button>
+  </div>
+  
+  <pre id="ingredientsText">{{ recipe.ingredients }}</pre>
   <p><strong>Instructions:</strong></p>
   <pre>{{ recipe.instructions }}</pre>
   <p>By: {{ recipe.author.username }}</p>
 
   <a href="{{ url_for('recipes') }}">← Back to all recipes</a>
+  
+  <script>
+    document.getElementById('copyIngredientsBtn').addEventListener('click', function() {
+      const ingredientsText = document.getElementById('ingredientsText').textContent;
+      
+      // use the Clipboard API to copy the text
+      navigator.clipboard.writeText(ingredientsText)
+        .then(() => {
+          // show success message
+          const originalText = this.textContent;
+          this.textContent = 'Copied!';
+          this.style.backgroundColor = '#4CAF50';
+          this.style.color = 'white';
+          
+          // reset button text after 2 seconds
+          setTimeout(() => {
+            this.textContent = originalText;
+            this.style.backgroundColor = '';
+            this.style.color = '';
+          }, 2000);
+        })
+        .catch(err => {
+          console.error('Failed to copy: ', err);
+          alert('Failed to copy ingredients. Please try again.');
+        });
+    });
+  </script>
 {% endblock %}
