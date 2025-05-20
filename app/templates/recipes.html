@@ -5,13 +5,31 @@
   <h2>All Recipes</h2>
   <table border="1" cellpadding="5">
     <thead>
-      <tr><th>Title</th><th>Description</th><th>Owner</th><th>Actions</th></tr>
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Rating</th>
+        <th>Owner</th>
+        <th>Actions</th>
+      </tr>
     </thead>
     <tbody>
       {% for recipe in recipes %}
         <tr>
           <td>{{ recipe.title }}</td>
           <td>{{ recipe.description }}</td>
+          <td>
+            {% if recipe.ratings %}
+              {{ recipe.avg_rating() }} / 5
+              <span style="color: #ffcc00;">
+                {% for i in range(round(recipe.avg_rating())) %}★{% endfor %}
+                {% for i in range(5 - round(recipe.avg_rating())) %}☆{% endfor %}
+              </span>
+              ({{ recipe.ratings|length }})
+            {% else %}
+              No ratings
+            {% endif %}
+          </td>
           <td>{{ recipe.author.username }}</td>
           <td>
             <a href="{{ url_for('view_recipe', recipe_id=recipe.id) }}">View</a>

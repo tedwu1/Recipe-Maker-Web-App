@@ -3,6 +3,19 @@
 
 {% block content %}
   <h2>{{ recipe.title }}</h2>
+  
+  <!-- display average rating -->
+  <div class="rating-display">
+    <p>
+      <strong>Rating:</strong> 
+      {% if recipe.ratings %}
+        {{ recipe.avg_rating() }} / 5 ({{ recipe.ratings|length }} rating{% if recipe.ratings|length != 1 %}s{% endif %})
+      {% else %}
+        No ratings yet
+      {% endif %}
+    </p>
+  </div>
+
   <p><strong>Description:</strong> {{ recipe.description }}</p>
 
   <p><strong>Ingredients:</strong></p>
@@ -15,37 +28,67 @@
   <p><em>By {{ recipe.author.username }}</em></p>
 
   <hr>
+  
+<!-- rating form -->
+{% if user %}
+  <h3>Rate this recipe</h3>
+  <form method="POST" action="{{ url_for('rate_recipe', recipe_id=recipe.id) }}">
+    <div class="star-rating">
+      <input type="radio" id="star5" name="rating" value="5" {% if user_rating and user_rating.value == 5 %}checked{% endif %} required>
+      <label for="star5">★</label>
+      <input type="radio" id="star4" name="rating" value="4" {% if user_rating and user_rating.value == 4 %}checked{% endif %}>
+      <label for="star4">★</label>
+      <input type="radio" id="star3" name="rating" value="3" {% if user_rating and user_rating.value == 3 %}checked{% endif %}>
+      <label for="star3">★</label>
+      <input type="radio" id="star2" name="rating" value="2" {% if user_rating and user_rating.value == 2 %}checked{% endif %}>
+      <label for="star2">★</label>
+      <input type="radio" id="star1" name="rating" value="1" {% if user_rating and user_rating.value == 1 %}checked{% endif %}>
+      <label for="star1">★</label>
+    </div>
+    <div>
+      <label for="comment">Review (optional):</label><br>
+      <textarea id="comment" name="comment" rows="3">{{ user_rating.comment if user_rating else '' }}</textarea>
+    </div>
+    <button type="submit">{% if user_rating %}Update{% else %}Submit{% endif %} Rating</button>
+  </form>
+{% else %}
+  <p><a href="{{ url_for('login') }}">Log in</a> to rate this recipe.</p>
+{% endif %}
+  
+  <hr>
+  
+  <!-- Display ratings with reviews -->
+  <h3>Ratings & Reviews</h3>
+  {% if recipe.ratings %}
+    <ul class="reviews-list">
+      {% for rating in recipe.ratings %}
+        <li>
+          <div class="review">
+            <div class="stars">
+              {% for i in range(rating.value) %}★{% endfor %}
+              {% for i in range(5 - rating.value) %}☆{% endfor %}
+            </div>
+            <div class="reviewer">
+              <strong>{{ rating.user.username }}</strong>
+              <span class="date">{{ rating.created_at.strftime('%Y-%m-%d') }}</span>
+            </div>
+            {% if rating.comment %}
+              <p class="comment">{{ rating.comment }}</p>
+            {% endif %}
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No ratings or reviews yet. Be the first to rate this recipe!</p>
+  {% endif %}
+
+  <hr>
   <h3>Share this recipe</h3>
   <div>
     <input type="text" id="share-link" value="{{ request.url }}" readonly style="width:80%">
     <button type="button" onclick="copyLink()">Copy Link</button>
   </div>
-
-  <hr>
-  <h3>Comments</h3>
-  {% if comments %}
-    <ul>
-      {% for comment in comments %}
-        <li>
-          <strong>{{ comment.author.username }}</strong>
-          <em>({{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }})</em>:<br>
-          {{ comment.body }}
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No comments yet.</p>
-  {% endif %}
-
-  {% if user %}
-    <form method="POST">
-      <label for="comment">Add a comment:</label><br>
-      <textarea id="comment" name="comment" rows="4" required></textarea><br>
-      <button type="submit">Submit Comment</button>
-    </form>
-  {% else %}
-    <p><a href="{{ url_for('login') }}">Log in</a> to leave a comment.</p>
-  {% endif %}
 
   <p><a href="{{ url_for('recipes') }}">&larr; Back to all recipes</a></p>
 
@@ -78,4 +121,58 @@
       alert('Ingredients copied to clipboard!');
     }
   </script>
+  
+  <style>
+    .star-rating {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+    
+    .star-rating input {
+      display: none;
+    }
+    
+    .star-rating label {
+      font-size: 30px;
+      color: #ccc;
+      cursor: pointer;
+    }
+    
+    .star-rating input:checked ~ label {
+      color: #ffcc00;
+    }
+    
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+      color: #ffcc00;
+    }
+    
+    .reviews-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    
+    .review {
+      margin-bottom: 15px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    
+    .stars {
+      color: #ffcc00;
+      font-size: 18px;
+    }
+    
+    .reviewer {
+      margin: 5px 0;
+    }
+    
+    .date {
+      color: #666;
+      font-size: 0.9em;
+      margin-left: 10px;
+    }
+  </style>
 {% endblock %}

@@ -8,7 +8,7 @@ from flask import (
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import app, db
-from .models import User, Recipe
+from .models import User, Recipe, Rating
 
 # helper to get current user
 def get_current_user():
@@ -131,8 +131,67 @@ def delete_recipe(recipe_id):
 # View recipe (public)
 @app.route('/recipes/<int:recipe_id>')
 def view_recipe(recipe_id):
-    user = get_current_user(); recipe = Recipe.query.get_or_404(recipe_id)
-    return render_template('view_recipe.html',recipe=recipe,user=user)
+    user = get_current_user()
+    recipe = Recipe.query.get_or_404(recipe_id)
+    
+    # Get user's existing rating if available
+    user_rating = None
+    if user:
+        user_rating = Rating.query.filter_by(
+            recipe_id=recipe_id,
+            user_id=user.id
+        ).first()
+    
+    return render_template(
+        'view_recipe.html',
+        recipe=recipe,
+        user=user,
+        user_rating=user_rating
+    )
+
+# Rate recipe
+@app.route('/recipes/<int:recipe_id>/rate', methods=['POST'])
+def rate_recipe(recipe_id):
+    user = get_current_user()
+    recipe = Recipe.query.get_or_404(recipe_id)
+    
+    if not user:
+        flash("Please log in to rate recipes.", "danger")
+        return redirect(url_for('login'))
+    
+    # Get rating value and optional comment from form
+    value = int(request.form.get('rating', 0))
+    comment = request.form.get('comment', '').strip()
+    
+    # Validate rating
+    if not value or value < 1 or value > 5:
+        flash("Please provide a rating between 1 and 5 stars.", "danger")
+        return redirect(url_for('view_recipe', recipe_id=recipe_id))
+    
+    # Check if the user has already rated this recipe
+    existing_rating = Rating.query.filter_by(
+        recipe_id=recipe_id, 
+        user_id=user.id
+    ).first()
+    
+    if existing_rating:
+        # Update existing rating
+        existing_rating.value = value
+        existing_rating.comment = comment
+        flash("Your rating has been updated.", "success")
+    else:
+        # Create new rating
+        new_rating = Rating(
+            value=value,
+            comment=comment,
+            recipe_id=recipe_id,
+            user_id=user.id
+        )
+        db.session.add(new_rating)
+        flash("Thank you for rating this recipe!", "success")
+    
+    db.session.commit()
+    return redirect(url_for('view_recipe', recipe_id=recipe_id))
 
 # View profile
 @app.route('/profile')
