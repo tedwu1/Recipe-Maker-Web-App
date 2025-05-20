@@ -8,15 +8,14 @@
   <nav>
     {% if user %}
       Hello, {{ user.username }} |
+      <a href="{{ url_for('profile') }}">View Profile</a> |
       <a href="{{ url_for('logout') }}">Logout</a>
     {% else %}
       <a href="{{ url_for('login') }}">Login</a> |
       <a href="{{ url_for('register') }}">Register</a>
     {% endif %}
     | <a href="{{ url_for('recipes') }}">All Recipes</a>
-    {% if user %}
-      | <a href="{{ url_for('add_recipe') }}">+ Add Recipe</a>
-    {% endif %}
+    {% if user %}| <a href="{{ url_for('add_recipe') }}">+ Add Recipe</a>{% endif %}
   </nav>
   <hr>
 
