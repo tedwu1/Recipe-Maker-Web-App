@@ -11,6 +11,18 @@
     <textarea name="ingredients" required></textarea><br>
     <label>Instructions:</label><br>
     <textarea name="instructions" required></textarea><br>
+
+    <label for="tags">Tags</label>
+    <select name="tags" id="tags" multiple>
+    {% for tag in tags %}
+        <option value="{{ tag.id }}"
+        {% if tag.id|string in request.form.getlist('tags') %} selected {% endif %}>
+        {{ tag.name }}
+        </option>
+    {% endfor %}
+    </select>
+    <p class="help-text">Hold Ctrl (CMD on Mac) to select multiple.</p>
+
     <input type="submit" value="Add Recipe">
 </form>
 {% endblock %}

@@ -88,14 +88,21 @@ def add_recipe():
     if not user:
         flash("You must be logged in to add a recipe.", "danger")
         return redirect(url_for("login"))
+
+    all_tags = Tag.query.order_by(Tag.name).all()
+
     if request.method == "POST":
-        title = request.form.get("title","" ).strip()
-        description = request.form.get("description","" ).strip()
-        ingredients = request.form.get("ingredients","" ).strip()
-        instructions = request.form.get("instructions","" ).strip()
+        title        = request.form.get("title","").strip()
+        description  = request.form.get("description","").strip()
+        ingredients  = request.form.get("ingredients","").strip()
+        instructions = request.form.get("instructions","").strip()
+        selected_ids = request.form.getlist("tags")  
+
         if not (title and description and ingredients and instructions):
             flash("All fields are required.", "danger")
-            return render_template("add_recipe.html", user=user)
+            return render_template("add_recipe.html", user=user, tags=all_tags)
+
+
         new = Recipe(
             title=title,
             description=description,
@@ -103,11 +110,15 @@ def add_recipe():
             instructions=instructions,
             user_id=user.id
         )
+
+        if selected_ids: 
+            new.tags = Tag.query.filter(Tag.id.in_(selected_ids)).all()
+
         db.session.add(new)
         db.session.commit()
         flash("Recipe added!", "success")
         return redirect(url_for("recipes"))
-    return render_template("add_recipe.html", user=user)
+    return render_template("add_recipe.html", user=user, tags=all_tags)
 
 # Edit recipe
 @app.route('/recipes/edit/<int:recipe_id>', methods=['GET','POST'])
