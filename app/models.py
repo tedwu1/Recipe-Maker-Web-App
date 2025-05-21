@@ -64,6 +64,25 @@ class Rating(db.Model):
     
     __table_args__ = (db.UniqueConstraint('recipe_id', 'user_id', name='_recipe_user_rating_uc'),)
 
+    reactions = db.relationship(
+        'Reaction',
+        backref='rating',
+        lazy='dynamic',
+        cascade="all, delete-orphan"
+    )
+
+class Reaction(db.Model):
+    id        = db.Column(db.Integer, primary_key=True)
+    emoji     = db.Column(db.String(10), nullable=False)              # e.g. "👍"
+    rating_id = db.Column(db.Integer, db.ForeignKey('rating.id'), nullable=False)
+    user_id   = db.Column(db.Integer, db.ForeignKey('user.id'),   nullable=False)
+    created_at= db.Column(db.DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (
+        db.UniqueConstraint('rating_id','user_id','emoji',
+                            name='_user_rating_emoji_uc'),
+    )
+
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)

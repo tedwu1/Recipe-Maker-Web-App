@@ -9,7 +9,7 @@ from flask import (
 from sqlalchemy import or_
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import app, db
-from .models import User, Recipe, Rating, Tag
+from .models import Reaction, User, Recipe, Rating, Tag
 import re
 import json
 
@@ -197,6 +197,42 @@ def delete_recipe(recipe_id):
         flash("Only owners can delete.","danger"); return redirect(url_for('recipes'))
     db.session.delete(recipe); db.session.commit(); flash("Recipe deleted.","info")
     return redirect(url_for('recipes'))
+
+@app.route('/ratings/<int:rating_id>/react', methods=['POST'])
+def react_to_comment(rating_id):
+    user = get_current_user()
+    if not user:
+        flash("Log in to react.", "danger")
+        return redirect(url_for('login'))
+
+    emoji = request.form.get('emoji')
+    if not emoji:
+        flash("No emoji selected.", "warning")
+        return redirect(request.referrer or url_for('home'))
+
+    rating = Rating.query.get_or_404(rating_id)
+
+    # see if they’ve already reacted with this emoji
+    existing = Reaction.query.filter_by(
+        rating_id=rating_id,
+        user_id=user.id,
+        emoji=emoji
+    ).first()
+
+    if existing:
+        db.session.delete(existing)
+        flash(f"Removed your {emoji} reaction.", "info")
+    else:
+        react = Reaction(
+            emoji=emoji,
+            rating_id=rating_id,
+            user_id=user.id
+        )
+        db.session.add(react)
+        flash(f"Reacted {emoji}!", "success")
+
+    db.session.commit()
+    return redirect(request.referrer or url_for('view_recipe', recipe_id=rating.recipe_id))
 
 # View recipe (public)
 @app.route('/recipes/<int:recipe_id>')

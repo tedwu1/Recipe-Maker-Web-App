@@ -95,6 +95,31 @@
                     {% if rating.comment %}
                     <p class="mb-0">{{ rating.comment }}</p>
                     {% endif %}
+
+                    {# Reaction bar #}
+                    <div class="mt-2 d-flex align-items-center reactions">
+                        {% set EMOJIS = ['👍','❤️','😂','😮','😢','😡'] %}
+                        {% for emoji in EMOJIS %}
+                        {# count how many reactions of this type #}
+                        {% set count = rating.reactions.filter_by(emoji=emoji).count() %}
+                        {# did the current user react? #}
+                        {% set reacted = user and rating.reactions.filter_by(user_id=user.id, emoji=emoji).first() %}
+                        <form method="POST" action="{{ url_for('react_to_comment', rating_id=rating.id) }}"
+                            class="me-2 d-inline">
+                            <input type="hidden" name="emoji" value="{{ emoji }}">
+                            <button type="submit"
+                                class="btn btn-sm p-1 {{ reacted and 'btn-warning' or 'btn-outline-secondary' }}"
+                                title="{{ reacted and 'Remove your reaction' or 'React' }}">
+                                {{ emoji }}
+                                {% if count > 0 %}
+                                <span class="badge bg-light text-dark">{{ count }}</span>
+                                {% endif %}
+                            </button>
+                        </form>
+                        {% endfor %}
+                    </div>
+
+
                 </li>
                 {% endfor %}
             </ul>
