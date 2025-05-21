@@ -19,7 +19,7 @@
         type="text"
         name="search"
         class="form-control"
-        placeholder="Search by title or ingredients"
+        placeholder="Search by title or ingredients or tag"
         value="{{ request.args.get('search','') }}"
       >
     </div>
@@ -41,6 +41,7 @@
           <tr>
             <th>Title</th>
             <th>Description</th>
+            <th>Tags</th>            {# ← new column #}
             <th>Rating</th>
             <th>Owner</th>
             <th class="text-end">Actions</th>
@@ -51,6 +52,15 @@
           <tr>
             <td>{{ recipe.title }}</td>
             <td>{{ recipe.description|truncate(50) }}</td>
+            <td>
+              {% if recipe.tags %}
+                {% for tag in recipe.tags %}
+                  <span class="badge bg-secondary me-1">{{ tag.name }}</span>
+                {% endfor %}
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
             <td>
               {% if recipe.ratings %}
                 {{ recipe.avg_rating() }} / 5

@@ -6,9 +6,10 @@ from flask import (
     flash,
     session
 )
+from sqlalchemy import or_
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import app, db
-from .models import User, Recipe, Rating, Tag, recipe_tags
+from .models import User, Recipe, Rating, Tag
 import re
 import json
 
@@ -78,21 +79,30 @@ def logout():
     flash("Logged out.", "info")
     return redirect(url_for("home"))
 
-# List recipes
 @app.route("/recipes")
 def recipes():
     user = get_current_user()
     search_query = request.args.get('search', '').strip()
-    
+
     if search_query:
-        # Search by title or ingredients (case-insensitive)
-        all_recipes = Recipe.query.filter(
-            (Recipe.title.ilike(f'%{search_query}%')) | 
-            (Recipe.ingredients.ilike(f'%{search_query}%'))
-        ).all()
+        like_pat = f"%{search_query}%"
+        # join out to tags, filter any of title / ingredients / tag-name
+        q = (
+            Recipe.query
+            .outerjoin(Recipe.tags)    # join the tag table
+            .filter(
+                or_(
+                    Recipe.title.ilike(like_pat),
+                    Recipe.ingredients.ilike(like_pat),
+                    Tag.name.ilike(like_pat),
+                )
+            )
+            .distinct()               # avoid dupes when a recipe has multiple matching tags
+        )
+        all_recipes = q.all()
     else:
         all_recipes = Recipe.query.all()
-    
+
     return render_template("recipes.html", recipes=all_recipes, user=user)
 
 # Add recipe
