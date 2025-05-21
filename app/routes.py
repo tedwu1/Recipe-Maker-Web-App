@@ -230,45 +230,49 @@ def rate_recipe(recipe_id):
     db.session.commit()
     return redirect(url_for('view_recipe', recipe_id=recipe_id))
 
-# View profile
-@app.route('/profile')
+@app.route('/profile', methods=['GET','POST'])
 def profile():
     user = get_current_user()
     if not user:
-        flash("You must be logged in to view your profile.","danger")
+        flash("You must be logged in to view your profile.", "danger")
         return redirect(url_for('login'))
-    my_recipes = Recipe.query.filter_by(user_id=user.id).all()
-    return render_template('profile.html', user=user, recipes=my_recipes)
 
-# Edit profile
-@app.route('/profile/edit', methods=['GET','POST'])
-def edit_profile():
-    user = get_current_user()
-    if not user:
-        flash("Log in to edit your profile.","danger")
-        return redirect(url_for('login'))
-    if request.method=='POST':
-        # gather inputs
+    # are we in edit‐mode?
+    edit_mode = request.method == 'POST' or request.args.get('edit') == '1'
+
+    # handle form submission
+    if request.method == 'POST':
         new_username = request.form.get('username','').strip()
-        new_email = request.form.get('email','').strip()
+        new_email    = request.form.get('email','').strip()
         new_password = request.form.get('password','').strip()
-        # validate
-        if not(new_username and new_email):
-            flash("Username and email cannot be blank.","danger")
-            return render_template('edit_profile.html',user=user)
-        # check uniqueness
-        if new_email!=user.email and User.query.filter_by(email=new_email).first():
-            flash("Email already in use.","warning")
-            return render_template('edit_profile.html',user=user)
+
+        # validation
+        if not (new_username and new_email):
+            flash("Username and email cannot be blank.", "danger")
+            return render_template('profile.html', user=user, recipes=[], edit_mode=True)
+
+        if new_email != user.email and User.query.filter_by(email=new_email).first():
+            flash("Email already in use.", "danger")
+            return render_template('profile.html', user=user, recipes=[], edit_mode=True)
+
         # apply updates
         user.username = new_username
-        user.email = new_email
+        user.email    = new_email
         if new_password:
             user.password = generate_password_hash(new_password)
+
         db.session.commit()
         flash("Profile updated!", "success")
         return redirect(url_for('profile'))
-    return render_template('edit_profile.html', user=user)
+
+    # GET: load recipes for view‐mode
+    recipes = Recipe.query.filter_by(user_id=user.id).all()
+    return render_template(
+        'profile.html',
+        user=user,
+        recipes=recipes,
+        edit_mode=edit_mode
+    )
 
 # 404 handler
 @app.errorhandler(404)

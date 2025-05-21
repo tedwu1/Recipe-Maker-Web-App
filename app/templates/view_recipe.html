@@ -125,13 +125,13 @@
         const input = document.getElementById('share-link');
         input.select();
         navigator.clipboard.writeText(input.value)
-            .then(() => alert('Link copied!'));
+            .then(() => showToast('Link copied!', 'success'));
     }
 
     function copyIngredients() {
         const text = document.getElementById('ingredients').innerText;
         navigator.clipboard.writeText(text)
-            .then(() => alert('Ingredients copied!'));
+            .then(() => showToast('Ingredients copied!', 'success'));
     }
 </script>
 
