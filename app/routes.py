@@ -9,7 +9,10 @@ from flask import (
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import app, db
 from .models import User, Recipe, Rating, Tag, recipe_tags
+import re
 import json
+
+EMAIL_RE = re.compile(r'^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$')
 
 # helper to get current user
 def get_current_user():
@@ -37,25 +40,35 @@ def login():
         flash("Invalid email or password.", "danger")
     return render_template("login.html")
 
-# Register
 @app.route("/register", methods=["GET","POST"])
 def register():
     if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        email = request.form.get("email", "").strip()
-        password = request.form.get("password", "")
+        username = request.form.get("username","").strip()
+        email    = request.form.get("email","").strip().lower()
+        password = request.form.get("password","")
+
         if not (username and email and password):
             flash("All fields are required.", "danger")
             return render_template("register.html")
-        if User.query.filter((User.username==username)|(User.email==email)).first():
-            flash("Username or email already exists.", "warning")
-            return render_template("register.html")
-        new = User(username=username, email=email,
-                   password=generate_password_hash(password))
+
+        if not EMAIL_RE.match(email):
+            flash("That doesn’t look like a valid email address.", "danger")
+            return render_template("register.html", username=username)
+
+        if User.query.filter_by(email=email).first():
+            flash("Email already registered.", "warning")
+            return render_template("register.html", username=username)
+
+        new = User(
+            username=username,
+            email=email,
+            password=generate_password_hash(password)
+        )
         db.session.add(new)
         db.session.commit()
         flash("Account created! Please log in.", "success")
         return redirect(url_for("login"))
+
     return render_template("register.html")
 
 # Logout

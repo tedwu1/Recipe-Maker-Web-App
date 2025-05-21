@@ -28,9 +28,15 @@
           name="email"
           class="form-control"
           required
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+          title="Please enter a valid email address, e.g. user@example.com"
           value="{{ request.form.email or '' }}"
         >
+        <div class="form-text">
+          Must be a valid email (letters, digits, `@`, domain, etc.).
+        </div>
       </div>
+
 
       <div class="mb-3">
         <label for="password" class="form-label">Password</label>
