@@ -6,9 +6,14 @@ from flask import (
     flash,
     session
 )
+from sqlalchemy import or_
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import app, db
-from .models import User, Recipe, Rating
+from .models import Reaction, User, Recipe, Rating, Tag
+import re
+import json
+
+EMAIL_RE = re.compile(r'^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$')
 
 # helper to get current user
 def get_current_user():
@@ -36,25 +41,35 @@ def login():
         flash("Invalid email or password.", "danger")
     return render_template("login.html")
 
-# Register
 @app.route("/register", methods=["GET","POST"])
 def register():
     if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        email = request.form.get("email", "").strip()
-        password = request.form.get("password", "")
+        username = request.form.get("username","").strip()
+        email    = request.form.get("email","").strip().lower()
+        password = request.form.get("password","")
+
         if not (username and email and password):
             flash("All fields are required.", "danger")
             return render_template("register.html")
-        if User.query.filter((User.username==username)|(User.email==email)).first():
-            flash("Username or email already exists.", "warning")
-            return render_template("register.html")
-        new = User(username=username, email=email,
-                   password=generate_password_hash(password))
+
+        if not EMAIL_RE.match(email):
+            flash("That doesn’t look like a valid email address.", "danger")
+            return render_template("register.html", username=username)
+
+        if User.query.filter_by(email=email).first():
+            flash("Email already registered.", "warning")
+            return render_template("register.html", username=username)
+
+        new = User(
+            username=username,
+            email=email,
+            password=generate_password_hash(password)
+        )
         db.session.add(new)
         db.session.commit()
         flash("Account created! Please log in.", "success")
         return redirect(url_for("login"))
+
     return render_template("register.html")
 
 # Logout
@@ -64,22 +79,41 @@ def logout():
     flash("Logged out.", "info")
     return redirect(url_for("home"))
 
-# List recipes
 @app.route("/recipes")
 def recipes():
     user = get_current_user()
-    search_query = request.args.get('search', '').strip()
-    
-    if search_query:
-        # Search by title or ingredients (case-insensitive)
-        all_recipes = Recipe.query.filter(
-            (Recipe.title.ilike(f'%{search_query}%')) | 
-            (Recipe.ingredients.ilike(f'%{search_query}%'))
-        ).all()
+    search_query = request.args.get('search','').strip()
+    show_saved  = request.args.get('saved') == '1'
+
+    if show_saved and user:
+        # only this user's saved recipes
+        base_q = user.saved
     else:
-        all_recipes = Recipe.query.all()
-    
-    return render_template("recipes.html", recipes=all_recipes, user=user)
+        base_q = Recipe.query
+
+    if search_query:
+        like_pat = f"%{search_query}%"
+        base_q = (
+            base_q
+            .outerjoin(Recipe.tags)
+            .filter(
+                or_(
+                    Recipe.title.ilike(like_pat),
+                    Recipe.ingredients.ilike(like_pat),
+                    Tag.name.ilike(like_pat),
+                )
+            )
+            .distinct()
+        )
+
+    all_recipes = base_q.all()
+    return render_template(
+        "recipes.html",
+        recipes=all_recipes,
+        user=user,
+        show_saved=show_saved,
+        search_query=search_query
+    )
 
 # Add recipe
 @app.route("/recipes/add", methods=["GET","POST"])
@@ -88,26 +122,52 @@ def add_recipe():
     if not user:
         flash("You must be logged in to add a recipe.", "danger")
         return redirect(url_for("login"))
+
+    all_tags = Tag.query.order_by(Tag.name).all()
+
     if request.method == "POST":
-        title = request.form.get("title","" ).strip()
-        description = request.form.get("description","" ).strip()
-        ingredients = request.form.get("ingredients","" ).strip()
-        instructions = request.form.get("instructions","" ).strip()
+        title        = request.form.get("title","").strip()
+        description  = request.form.get("description","").strip()
+        ingredients  = request.form.get("ingredients","").strip()
+        instructions = request.form.get("instructions","").strip()
+
+        tags_json = request.form.get("tags", "[]")
+        try: 
+            tag_data = json.loads(tags_json)
+            tag_names = [t["value"].strip().lower() for t in tag_data if t.get("value","").strip()]
+        except (ValueError, TypeError):
+            tag_names = []
+
         if not (title and description and ingredients and instructions):
             flash("All fields are required.", "danger")
-            return render_template("add_recipe.html", user=user)
-        new = Recipe(
+            return render_template("add_recipe.html", user=user, tags=all_tags)
+
+        recipe = Recipe(
             title=title,
             description=description,
             ingredients=ingredients,
             instructions=instructions,
             user_id=user.id
         )
-        db.session.add(new)
+
+        tag_objs = []
+        for name in set(tag_names):
+            tag = Tag.query.filter_by(name=name).first()
+            if not tag:
+                tag = Tag(name=name)
+                db.session.add(tag)
+                # ensure it gets an ID before we append
+                db.session.flush()
+            tag_objs.append(tag)
+
+        recipe.tags = tag_objs
+
+        db.session.add(recipe)
         db.session.commit()
         flash("Recipe added!", "success")
         return redirect(url_for("recipes"))
-    return render_template("add_recipe.html", user=user)
+
+    return render_template("add_recipe.html", user=user, tags=all_tags)
 
 # Edit recipe
 @app.route('/recipes/edit/<int:recipe_id>', methods=['GET','POST'])
@@ -137,6 +197,42 @@ def delete_recipe(recipe_id):
         flash("Only owners can delete.","danger"); return redirect(url_for('recipes'))
     db.session.delete(recipe); db.session.commit(); flash("Recipe deleted.","info")
     return redirect(url_for('recipes'))
+
+@app.route('/ratings/<int:rating_id>/react', methods=['POST'])
+def react_to_comment(rating_id):
+    user = get_current_user()
+    if not user:
+        flash("Log in to react.", "danger")
+        return redirect(url_for('login'))
+
+    emoji = request.form.get('emoji')
+    if not emoji:
+        flash("No emoji selected.", "warning")
+        return redirect(request.referrer or url_for('home'))
+
+    rating = Rating.query.get_or_404(rating_id)
+
+    # see if they’ve already reacted with this emoji
+    existing = Reaction.query.filter_by(
+        rating_id=rating_id,
+        user_id=user.id,
+        emoji=emoji
+    ).first()
+
+    if existing:
+        db.session.delete(existing)
+        flash(f"Removed your {emoji} reaction.", "info")
+    else:
+        react = Reaction(
+            emoji=emoji,
+            rating_id=rating_id,
+            user_id=user.id
+        )
+        db.session.add(react)
+        flash(f"Reacted {emoji}!", "success")
+
+    db.session.commit()
+    return redirect(request.referrer or url_for('view_recipe', recipe_id=rating.recipe_id))
 
 # View recipe (public)
 @app.route('/recipes/<int:recipe_id>')
@@ -203,45 +299,67 @@ def rate_recipe(recipe_id):
     db.session.commit()
     return redirect(url_for('view_recipe', recipe_id=recipe_id))
 
-# View profile
-@app.route('/profile')
+@app.route('/profile', methods=['GET','POST'])
 def profile():
     user = get_current_user()
     if not user:
-        flash("You must be logged in to view your profile.","danger")
+        flash("You must be logged in to view your profile.", "danger")
         return redirect(url_for('login'))
-    my_recipes = Recipe.query.filter_by(user_id=user.id).all()
-    return render_template('profile.html', user=user, recipes=my_recipes)
 
-# Edit profile
-@app.route('/profile/edit', methods=['GET','POST'])
-def edit_profile():
-    user = get_current_user()
-    if not user:
-        flash("Log in to edit your profile.","danger")
-        return redirect(url_for('login'))
-    if request.method=='POST':
-        # gather inputs
+    # are we in edit‐mode?
+    edit_mode = request.method == 'POST' or request.args.get('edit') == '1'
+
+    # handle form submission
+    if request.method == 'POST':
         new_username = request.form.get('username','').strip()
-        new_email = request.form.get('email','').strip()
+        new_email    = request.form.get('email','').strip()
         new_password = request.form.get('password','').strip()
-        # validate
-        if not(new_username and new_email):
-            flash("Username and email cannot be blank.","danger")
-            return render_template('edit_profile.html',user=user)
-        # check uniqueness
-        if new_email!=user.email and User.query.filter_by(email=new_email).first():
-            flash("Email already in use.","warning")
-            return render_template('edit_profile.html',user=user)
+
+        # validation
+        if not (new_username and new_email):
+            flash("Username and email cannot be blank.", "danger")
+            return render_template('profile.html', user=user, recipes=[], edit_mode=True)
+
+        if new_email != user.email and User.query.filter_by(email=new_email).first():
+            flash("Email already in use.", "danger")
+            return render_template('profile.html', user=user, recipes=[], edit_mode=True)
+
         # apply updates
         user.username = new_username
-        user.email = new_email
+        user.email    = new_email
         if new_password:
             user.password = generate_password_hash(new_password)
+
         db.session.commit()
         flash("Profile updated!", "success")
         return redirect(url_for('profile'))
-    return render_template('edit_profile.html', user=user)
+
+    # GET: load recipes for view‐mode
+    recipes = Recipe.query.filter_by(user_id=user.id).all()
+    return render_template(
+        'profile.html',
+        user=user,
+        recipes=recipes,
+        edit_mode=edit_mode
+    )
+
+@app.route('/recipes/<int:recipe_id>/toggle-save', methods=['POST'])
+def toggle_save(recipe_id):
+    user = get_current_user()
+    if not user:
+        flash("Log in to save recipes.", "danger")
+        return redirect(url_for('login'))
+
+    recipe = Recipe.query.get_or_404(recipe_id)
+    if recipe in user.saved:
+        user.saved.remove(recipe)
+        flash(f'Removed "{recipe.title}" from Saved.', 'info')
+    else:
+        user.saved.append(recipe)
+        flash(f'Added "{recipe.title}" to Saved.', 'success')
+
+    db.session.commit()
+    return redirect(request.referrer or url_for('recipes'))
 
 # 404 handler
 @app.errorhandler(404)

@@ -1,16 +1,70 @@
 {% extends "base.html" %}
 {% block title %}Add Recipe{% endblock %}
+
 {% block content %}
-<h2>Add New Recipe</h2>
-<form method="POST">
-    <label>Title:</label><br>
-    <input type="text" name="title" required><br>
-    <label>Description:</label><br>
-    <textarea name="description" required></textarea><br>
-    <label>Ingredients:</label><br>
-    <textarea name="ingredients" required></textarea><br>
-    <label>Instructions:</label><br>
-    <textarea name="instructions" required></textarea><br>
-    <input type="submit" value="Add Recipe">
-</form>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="mb-4">Add New Recipe</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" id="title" name="title" class="form-control" required
+                    value="{{ request.form.title or '' }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea id="description" name="description" class="form-control" rows="3"
+                    required>{{ request.form.description or '' }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="ingredients" class="form-label">Ingredients</label>
+                <textarea id="ingredients" name="ingredients" class="form-control" rows="4"
+                    required>{{ request.form.ingredients or '' }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="instructions" class="form-label">Instructions</label>
+                <textarea id="instructions" name="instructions" class="form-control" rows="5"
+                    required>{{ request.form.instructions or '' }}</textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="tags-input" class="form-label">Tags</label>
+                <input id="tags-input" name="tags" class="form-control" placeholder="Type & press Enter to add a tag"
+                    value="{{ request.form.tags or '' }}">
+                <div class="form-text">
+                    Start typing, then hit Enter or comma to turn it into a tag.
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="bi-plus-lg me-1"></i> Add Recipe
+            </button>
+            <a href="{{ url_for('recipes') }}" class="btn btn-secondary ms-2">Cancel</a>
+        </form>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // build a JS array of existing tag names
+  const whitelist = {{ tags|map(attribute='name')|list|tojson }};
+
+  var input = document.getElementById('tags-input');
+  var tagify = new Tagify(input, {
+    whitelist: whitelist,
+    dropdown: {
+      enabled: 0,        // show suggestions on focus
+      maxItems: 20,
+      classname: 'tags-look',
+      fuzzySearch: true,
+      position: 'all',
+      highlightFirst: true
+    }
+  });
+</script>
 {% endblock %}
