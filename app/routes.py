@@ -306,25 +306,39 @@ def profile():
         flash("You must be logged in to view your profile.", "danger")
         return redirect(url_for('login'))
 
-    # are we in edit‐mode?
-    edit_mode = request.method == 'POST' or request.args.get('edit') == '1'
+    edit_mode = (request.method=='POST') or (request.args.get('edit')=='1')
 
     # handle form submission
     if request.method == 'POST':
         new_username = request.form.get('username','').strip()
-        new_email    = request.form.get('email','').strip()
+        new_email    = request.form.get('email','').strip().lower()
         new_password = request.form.get('password','').strip()
 
-        # validation
+        # presence validation
         if not (new_username and new_email):
             flash("Username and email cannot be blank.", "danger")
-            return render_template('profile.html', user=user, recipes=[], edit_mode=True)
+            return render_template('profile.html', user=user,
+                                   recipes=[], edit_mode=True)
 
+        # email format
+        if not EMAIL_RE.match(new_email):
+            flash("Invalid email format.", "danger")
+            return render_template('profile.html', user=user,
+                                   recipes=[], edit_mode=True)
+
+        # username uniqueness
+        if new_username != user.username and User.query.filter_by(username=new_username).first():
+            flash("Username already in use.", "warning")
+            return render_template('profile.html', user=user,
+                                   recipes=[], edit_mode=True)
+
+        # email uniqueness
         if new_email != user.email and User.query.filter_by(email=new_email).first():
-            flash("Email already in use.", "danger")
-            return render_template('profile.html', user=user, recipes=[], edit_mode=True)
+            flash("Email already in use.", "warning")
+            return render_template('profile.html', user=user,
+                                   recipes=[], edit_mode=True)
 
-        # apply updates
+        # apply changes
         user.username = new_username
         user.email    = new_email
         if new_password:
@@ -336,12 +350,10 @@ def profile():
 
     # GET: load recipes for view‐mode
     recipes = Recipe.query.filter_by(user_id=user.id).all()
-    return render_template(
-        'profile.html',
-        user=user,
-        recipes=recipes,
-        edit_mode=edit_mode
-    )
+    return render_template('profile.html',
+                           user=user,
+                           recipes=recipes,
+                           edit_mode=edit_mode)
 
 @app.route('/recipes/<int:recipe_id>/toggle-save', methods=['POST'])
 def toggle_save(recipe_id):
