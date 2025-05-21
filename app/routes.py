@@ -82,14 +82,20 @@ def logout():
 @app.route("/recipes")
 def recipes():
     user = get_current_user()
-    search_query = request.args.get('search', '').strip()
+    search_query = request.args.get('search','').strip()
+    show_saved  = request.args.get('saved') == '1'
+
+    if show_saved and user:
+        # only this user's saved recipes
+        base_q = user.saved
+    else:
+        base_q = Recipe.query
 
     if search_query:
         like_pat = f"%{search_query}%"
-        # join out to tags, filter any of title / ingredients / tag-name
-        q = (
-            Recipe.query
-            .outerjoin(Recipe.tags)    # join the tag table
+        base_q = (
+            base_q
+            .outerjoin(Recipe.tags)
             .filter(
                 or_(
                     Recipe.title.ilike(like_pat),
@@ -97,13 +103,17 @@ def recipes():
                     Tag.name.ilike(like_pat),
                 )
             )
-            .distinct()               # avoid dupes when a recipe has multiple matching tags
+            .distinct()
         )
-        all_recipes = q.all()
-    else:
-        all_recipes = Recipe.query.all()
 
-    return render_template("recipes.html", recipes=all_recipes, user=user)
+    all_recipes = base_q.all()
+    return render_template(
+        "recipes.html",
+        recipes=all_recipes,
+        user=user,
+        show_saved=show_saved,
+        search_query=search_query
+    )
 
 # Add recipe
 @app.route("/recipes/add", methods=["GET","POST"])
@@ -296,6 +306,24 @@ def profile():
         recipes=recipes,
         edit_mode=edit_mode
     )
+
+@app.route('/recipes/<int:recipe_id>/toggle-save', methods=['POST'])
+def toggle_save(recipe_id):
+    user = get_current_user()
+    if not user:
+        flash("Log in to save recipes.", "danger")
+        return redirect(url_for('login'))
+
+    recipe = Recipe.query.get_or_404(recipe_id)
+    if recipe in user.saved:
+        user.saved.remove(recipe)
+        flash(f'Removed "{recipe.title}" from Saved.', 'info')
+    else:
+        user.saved.append(recipe)
+        flash(f'Added "{recipe.title}" to Saved.', 'success')
+
+    db.session.commit()
+    return redirect(request.referrer or url_for('recipes'))
 
 # 404 handler
 @app.errorhandler(404)

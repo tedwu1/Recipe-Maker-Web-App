@@ -10,6 +10,12 @@ recipe_tags = db.Table(
     db.Column('tag_id',     db.Integer, db.ForeignKey('tag.id'),        primary_key=True)
 )
 
+saved_recipes = db.Table(
+    'saved_recipes',
+    db.Column('user_id',    db.Integer, db.ForeignKey('user.id'),       primary_key=True),
+    db.Column('recipe_id',  db.Integer, db.ForeignKey('recipe.id'),     primary_key=True)
+)
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
@@ -18,6 +24,13 @@ class User(UserMixin, db.Model):
     recipes = db.relationship('Recipe', backref='author', lazy=True)
     ratings = db.relationship('Rating', backref='user', lazy=True) 
     recipes = db.relationship('Recipe', backref='author', lazy=True)
+
+    saved = db.relationship(
+        'Recipe',
+        secondary=saved_recipes,
+        backref=db.backref('saved_by', lazy='dynamic'),
+        lazy='dynamic',
+    )
 
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
